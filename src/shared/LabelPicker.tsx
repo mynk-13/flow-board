@@ -56,7 +56,6 @@ export function LabelPicker({ selected, onChange, disabled = false }: LabelPicke
               style={{
                 backgroundColor: def.bg,
                 color: def.fg,
-                ringColor: def.dot,
                 ...(isActive ? { outline: `2px solid ${def.dot}`, outlineOffset: '1px' } : {}),
               }}
             >

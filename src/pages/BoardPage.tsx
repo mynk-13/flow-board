@@ -12,7 +12,7 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import { ArrowLeft, Search, Flag, Tag, Wifi, WifiOff, Share2, Check } from 'lucide-react'
+import { ArrowLeft, Search, Flag, Tag, Wifi, WifiOff, Share2, Check, Eye } from 'lucide-react'
 import { FilterDropdown } from '@/shared/FilterDropdown'
 import type { DropdownOption } from '@/shared/FilterDropdown'
 import { getLabelDef } from '@/lib/labels'
@@ -27,7 +27,7 @@ import {
 } from '@/lib/firestore'
 import { useUIStore } from '@/lib/store'
 import { COLUMN_IDS } from '@/lib/types'
-import type { ColumnId, Priority, Task, ProjectRole, OutletCtx, Project } from '@/lib/types'
+import type { ColumnId, Task, ProjectRole, OutletCtx, Project } from '@/lib/types'
 import { useOutletContext } from 'react-router-dom'
 import { getSocket, connectSocket } from '@/lib/socket'
 import type { PresenceUser, CursorData, TaskMovedPayload, TaskCreatedPayload, TaskUpdatedPayload, TaskDeletedPayload } from '@/lib/socket'
