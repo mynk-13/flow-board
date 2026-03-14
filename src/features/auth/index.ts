@@ -1,3 +1,4 @@
 /**
- * Auth feature: sign in/up, profile, logout.
+ * Auth feature: sign in/up (Firebase Auth), profile, logout.
  */
+export { AuthProvider, useAuth } from './AuthProvider'

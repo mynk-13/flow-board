@@ -44,10 +44,17 @@
 - Added Husky + lint-staged; .husky/pre-commit runs npx lint-staged. (Git not init yet so husky reported .git can't be found.)
 - Added .env.example, updated README.md. TECHNICAL_ASPECTS and LOG_FILE updated with structure and steps.
 
+### Firebase switch (user: push done, use Firebase not Supabase)
+
+- Installed firebase SDK. Added src/lib/firebase.ts (app, auth, db), src/features/auth/AuthProvider.tsx + useAuth, AuthProvider in main.tsx. .env.example updated to VITE_FIREBASE_* (six vars). Created FIREBASE_SETUP.md (full “what to do” for user). REQUIREMENTS_FROM_ME, TECHNICAL_ASPECTS, README updated for Firebase.
+
+### Auth UI + Router (next steps after Vercel domain)
+
+- Added react-router-dom. LoginPage (signInWithEmailAndPassword), SignupPage (createUserWithEmailAndPassword, confirm password), DashboardPage (welcome + signOut). ProtectedLayout (redirect to /login, header + Outlet). AuthRedirect (redirect to / when already logged in). App.tsx: BrowserRouter, Routes /login, /signup, / (ProtectedLayout > DashboardPage), * -> /. AuthGuard for initial loading.
+
 ### Pending
 
-- User: git init, GitHub repo, Supabase (or backend), env vars. See REQUIREMENTS_FROM_ME.md.
-- Phase 2: Auth (Supabase/NextAuth), React Router v7, Kanban board, task CRUD, dnd-kit.
+- Phase 2 continued: Kanban board (columns, tasks from Firestore), dnd-kit, filter bar, task detail modal.
 - Phase 3: Socket.io, live cursors, presence, optimistic updates.
 - Phase 4: Module Federation analytics remote.
 - Phase 5: Virtual scrolling, command palette, E2E, Lighthouse.

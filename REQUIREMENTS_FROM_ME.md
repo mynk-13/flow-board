@@ -14,21 +14,20 @@
 
 ## 2. Accounts & Access
 
-- [ ] **GitHub** — Create a repo (e.g. `flow-board` or `FlowBoard`) and share the URL. Ensure you have push access for the project codebase.
-- [ ] **Deploy** — Choose **Vercel** (primary per BRD) or **Netlify**. You’ll need an account and to connect the GitHub repo for auto-deploy.
-- [ ] **Backend hosting** — The BRD requires a Node.js + Express + Socket.io server and a database. You must choose one of:
-  - **Supabase** (recommended): Auth (OAuth + Magic Link), PostgreSQL, and optional Realtime. Backend can be minimal (Vercel serverless or a small Node server elsewhere).
-  - **Custom backend:** You (or we) host Node + Express + Socket.io + PostgreSQL (e.g. Railway, Render, Fly.io). You provide the production URL and env vars.
+- [x] **GitHub** — Repo created and push done.
+- [ ] **Deploy** — Choose **Vercel** (primary per BRD) or **Netlify**. Connect the GitHub repo and add env vars (see below).
+- [ ] **Backend / real-time** — We use **Firebase** (Auth + Firestore). For real-time collaboration (live cursors, presence, task sync) the BRD expects a Node.js + Socket.io server; that can be added later (e.g. Railway, Render) or we use Firestore real-time listeners where possible.
 
 ---
 
-## 3. Authentication
+## 3. Firebase (Auth + Firestore)
 
-- [ ] **Supabase** (if using): Create a project at [supabase.com](https://supabase.com). Provide (via env, not in chat):
-  - `VITE_SUPABASE_URL`
-  - `VITE_SUPABASE_ANON_KEY`
-- [ ] **GitHub OAuth** (for “Sign in with GitHub”): In GitHub → Settings → Developer settings → OAuth Apps, create an app. Add the callback URL Supabase gives you. Supabase dashboard will need the Client ID and Secret (stored as env vars on backend).
-- [ ] **Magic Link** (optional): Supabase supports it out of the box; confirm if you want it enabled.
+- [ ] **Firebase project** — Create at [Firebase Console](https://console.firebase.google.com/). See **[FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** for step-by-step instructions.
+- [ ] **Web app** — Register a web app in the project and copy the config (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId).
+- [ ] **Authentication** — Enable at least one sign-in method (Email/Password and/or Google) in Authentication → Sign-in method.
+- [ ] **Firestore** — Create a Firestore database (test mode for dev is OK; we’ll add rules later).
+- [ ] **Env vars** — Put the six Firebase config values into `.env` as `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`. Never commit `.env`.
+- [ ] **Vercel/Netlify** — Add the same six `VITE_FIREBASE_*` variables in the project’s Environment variables so production build works.
 
 ---
 
@@ -42,11 +41,11 @@
 
 ## 5. Technical / Environment
 
-- [ ] **Environment variables** — You’ll need to set these in Vercel/Netlify (and in backend host if separate):
-  - Frontend: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (if Supabase).
-  - Backend (if custom): `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, GitHub OAuth client ID/secret, etc. (exact list will be in `.env.example` and TECHNICAL_ASPECTS.md).
-- [ ] **Domain** — Optional custom domain (e.g. `flowboard.app`). Configure in Vercel/Netlify after connect.
-- [ ] **Analytics remote** — If we ship the analytics panel as a separate deploy (Module Federation remote), you may need a second Vercel/Netlify project or subpath; we’ll document when we get there.
+- [ ] **Environment variables** — You need:
+  - **Firebase (required):** All six `VITE_FIREBASE_*` (see .env.example and FIREBASE_SETUP.md).
+  - **Backend (later):** If we add a custom Node + Socket.io server: `VITE_API_URL`, and on the server `DATABASE_URL`, `CORS_ORIGIN`, etc.
+- [ ] **Domain** — Optional custom domain; configure in Vercel/Netlify after connect.
+- [ ] **Analytics remote** — If we ship the analytics panel as a separate deploy (Module Federation), you may need a second Vercel/Netlify project; we’ll document when we get there.
 
 ---
 
@@ -54,12 +53,11 @@
 
 | Item | What you do |
 |------|-------------|
-| GitHub repo | Create and push; connect to Vercel/Netlify |
-| Vercel or Netlify | Sign up, connect repo, add env vars |
-| Supabase (or backend) | Create project; add Auth providers (e.g. GitHub); provide URL + anon key |
-| OAuth app | GitHub OAuth app with callback URL for Supabase |
-| Secrets | Never commit; only set in Vercel/Netlify (and backend host) |
-| Review | Review PLAN_OF_ACTION, TECHNICAL_ASPECTS, and LOG_FILE as we go |
+| GitHub repo | Done (push completed). |
+| Vercel or Netlify | Sign up, connect repo, add the six Firebase env vars. |
+| Firebase | Create project, register web app, enable Auth + Firestore, copy config into .env and into Vercel/Netlify env. See **FIREBASE_SETUP.md**. |
+| Secrets | Never commit .env; only set in Vercel/Netlify (and in any backend host later). |
+| Review | Review PLAN_OF_ACTION, TECHNICAL_ASPECTS, and LOG_FILE as we go. |
 
 ---
 

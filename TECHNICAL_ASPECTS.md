@@ -9,8 +9,8 @@
 
 - **Type:** SPA (single-page application) with real-time WebSocket layer and optional micro-frontend (analytics).
 - **Frontend:** React 19 + TypeScript 5.x, Vite 6 (dev), feature-sliced structure. Production build deployable to Vercel/Netlify.
-- **Backend/API:** Node.js + Express (REST) + Socket.io (WebSocket). Database: PostgreSQL via Prisma ORM, or Supabase (managed Postgres + Auth).
-- **Hosting:** Frontend on Vercel or Netlify; backend elsewhere (Railway, Render, or serverless + external Socket server) unless using Supabase-only approach.
+- **Backend/Auth/DB:** Firebase (Auth + Firestore). Optional later: Node.js + Express + Socket.io for real-time (cursors, presence, task sync) if beyond Firestore listeners.
+- **Hosting:** Frontend on Vercel or Netlify; Firebase runs in Google’s infrastructure.
 - **Repo:** GitHub; CI/CD via GitHub Actions (lint → test → build → deploy).
 
 ---
@@ -100,8 +100,8 @@ analytics-remote/ # (Phase 4) Separate MFE app — Module Federation remote
 
 ## 8. Environment & Config
 
-- **Frontend env:** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (if Supabase). Set in Vercel/Netlify.
-- **Backend env (if custom):** `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, GitHub OAuth client ID/secret, Socket.io CORS. Documented in `.env.example`; never committed.
+- **Frontend env:** Six Firebase config vars: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`. Set in `.env` locally and in Vercel/Netlify. See **FIREBASE_SETUP.md**.
+- **Backend env (if custom Node + Socket.io later):** `DATABASE_URL`, `CORS_ORIGIN`, etc. Documented in `.env.example` when added.
 - **CI:** GitHub Actions use repo secrets for deploy and any required env.
 
 ---

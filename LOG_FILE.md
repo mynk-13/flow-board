@@ -50,4 +50,22 @@
 
 ---
 
+### 2026-03-14 — Switch to Firebase (Auth + Firestore)
+
+- **Step:** User confirmed push done; requested Firebase instead of Supabase.
+- **Step:** Installed `firebase` SDK. Added `src/lib/firebase.ts` (initializeApp, getAuth, getFirestore) using `VITE_FIREBASE_*` env vars. Added `src/features/auth/AuthProvider.tsx` (onAuthStateChanged, useAuth, signOut) and wired `AuthProvider` in `main.tsx`.
+- **Step:** Replaced `.env.example` with six Firebase config vars. Wrote **FIREBASE_SETUP.md** with step-by-step: create project, register web app, enable Auth + Firestore, add env locally and on Vercel/Netlify. Updated **REQUIREMENTS_FROM_ME.md** (Firebase checklist, GitHub done), **TECHNICAL_ASPECTS.md** (Firebase for Auth/DB, env section), **README.md** (Firebase in stack, link to FIREBASE_SETUP).
+- **Errors:** None.
+
+---
+
+### 2026-03-14 — Auth UI, React Router, protected layout
+
+- **Step:** User asked to proceed with next steps after adding Vercel domain to Firebase. Implemented Phase 2 auth and routing.
+- **Step:** Installed `react-router-dom`. Created `src/pages/LoginPage.tsx` (email/password, signInWithEmailAndPassword, error state, link to signup), `src/pages/SignupPage.tsx` (email, password, confirm password, createUserWithEmailAndPassword, validation, link to login), `src/pages/DashboardPage.tsx` (welcome + sign out). Created `src/app/ProtectedLayout.tsx` (redirect to /login if not authenticated, header + Outlet), `src/app/AuthRedirect.tsx` (redirect to / if already logged in, for login/signup). Wired `App.tsx` with BrowserRouter, Routes: /login, /signup, / (ProtectedLayout with index DashboardPage), * -> Navigate to /. AuthGuard wraps routes to show loading until auth state is ready.
+- **Fix:** Removed unused `user` from AuthGuard to satisfy TS6133.
+- **Errors:** None after fix. Build passes.
+
+---
+
 *Continue appending new entries as work progresses.*

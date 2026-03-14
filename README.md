@@ -3,7 +3,7 @@
 **Real-time collaborative project manager** — Kanban boards, live cursors, optimistic updates, and a micro-frontend analytics panel. Built as a portfolio-grade React 19 + TypeScript app.
 
 - **Deploy:** Vercel or Netlify  
-- **Stack:** React 19, TypeScript, Vite 6, Tailwind CSS 4, Zustand, TanStack Query, Socket.io, dnd-kit (see [TECHNICAL_ASPECTS.md](./TECHNICAL_ASPECTS.md))
+- **Stack:** React 19, TypeScript, Vite 6, Tailwind CSS 4, **Firebase** (Auth + Firestore), Zustand, TanStack Query, Socket.io, dnd-kit (see [TECHNICAL_ASPECTS.md](./TECHNICAL_ASPECTS.md))
 
 ---
 
@@ -44,7 +44,7 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ## Environment
 
-Copy [.env.example](./.env.example) to `.env` and add your values (Supabase URL/anon key, API URL, etc.). See REQUIREMENTS_FROM_ME.md for accounts and setup.
+Copy [.env.example](./.env.example) to `.env` and add your **Firebase** config (six `VITE_FIREBASE_*` vars). See **[FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** for step-by-step instructions and [REQUIREMENTS_FROM_ME.md](./REQUIREMENTS_FROM_ME.md) for the full checklist.
 
 ---
 
