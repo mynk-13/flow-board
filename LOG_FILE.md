@@ -68,4 +68,18 @@
 
 ---
 
+### 2026-03-14 — Phase 2: Core Board implementation
+
+- **Step:** Installed `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`, `zustand`, `@tanstack/react-query`, `lucide-react`.
+- **Step:** Created `src/lib/types.ts` (Workspace, Project, Task, ColumnId, Priority, COLUMN_IDS, COLUMN_LABELS), `src/lib/firestore.ts` (getOrCreateWorkspace, getProjects, createProject, deleteProject, getTasks, createTask, updateTask, moveTask, deleteTask, getColumnTasks, getNextPosition), `src/lib/store.ts` (Zustand: sidebarOpen, activeProject, taskDetailId, filterPriority, filterSearch, tasks, upsertTask, removeTask).
+- **Step:** Built `src/app/Sidebar.tsx` (collapsible 240px/64px, workspace logo, project links, sign out), `src/app/AppLayout.tsx` (sidebar + header + Outlet + create project modal, getOrCreateWorkspace on mount), replaced ProtectedLayout with AppLayout.
+- **Step:** Rewrote `DashboardPage` (project cards grid with delete on hover, empty state CTA).
+- **Step:** Built `src/features/tasks/TaskCard.tsx` (sortable, drag handle, priority dot, labels, due date), `src/features/board/BoardColumn.tsx` (droppable, SortableContext, inline add textarea with Cmd+Enter, Add/Cancel), `src/features/tasks/TaskDetailModal.tsx` (slide-in panel, edit title/status/priority/labels/due date/description, delete, save).
+- **Step:** Built `src/pages/BoardPage.tsx` (DndContext, DragOverlay, onDragStart/Over/End for cross-column and reorder, filter bar with search + priority filter, loads tasks from Firestore on mount).
+- **Step:** Updated `App.tsx` (AppLayout wraps / and /board/:projectId routes). Added slide-in CSS animation.
+- **Errors:** TS6196 `Task` unused, TS6133 `Plus` unused after removing Plus from DashboardPage.
+- **Fix:** Removed unused imports. Build passes.
+
+---
+
 *Continue appending new entries as work progresses.*

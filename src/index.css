@@ -1,6 +1,15 @@
 @import 'tailwindcss';
 
 /* Use @layer base so Tailwind v4 utilities (margin/padding) can override this reset */
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @layer base {
   *,
   *::before,
@@ -18,5 +27,12 @@
 
   body {
     min-height: 100vh;
+  }
+
+  /* Every button and select is pointer by default — no more hunting for missing cursor-pointer */
+  button,
+  select,
+  [role="button"] {
+    cursor: pointer;
   }
 }

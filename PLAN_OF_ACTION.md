@@ -19,7 +19,7 @@
 | Phase | Duration | Description | Status |
 |-------|----------|-------------|--------|
 | **Phase 1: Foundation** | Week 1–2 | Scaffolding (Vite + React 19 + TS), design system (Tailwind), auth (Firebase), routing, CI pipeline | **Done** |
-| **Phase 2: Core Board** | Week 3–4 | Kanban columns, task CRUD, dnd-kit drag-drop, task detail modal, inline creation, filter bar | **In progress** |
+| **Phase 2: Core Board** | Week 3–4 | Kanban columns, task CRUD, dnd-kit drag-drop, task detail modal, inline creation, filter bar | **Done** |
 | **Phase 3: Real-Time** | Week 5–6 | Socket.io, live cursors, presence, optimistic updates + reconciliation, conflict resolution | Pending |
 | **Phase 4: Analytics MFE** | Week 7–8 | Module Federation, analytics dashboard (Recharts), independent build/deploy for remote | Pending |
 | **Phase 5: Polish & Test** | Week 9–10 | Virtual scrolling, command palette, responsive audit, Playwright E2E, Lighthouse, dark mode, docs | Pending |
@@ -32,8 +32,8 @@
 - [ ] Requirements from you provided (GitHub repo, Supabase/Vercel, env vars — see REQUIREMENTS_FROM_ME.md)
 - [ ] Project scaffold created (Vite, React 19, TypeScript, Tailwind, Shadcn, ESLint, Prettier, Husky)
 - [x] Auth flow (Firebase Email/Password) working — login, signup, protected routes
-- [ ] Kanban board with columns and task CRUD
-- [ ] Drag-and-drop (dnd-kit) and real-time sync
+- [x] Kanban board with columns and task CRUD
+- [x] Drag-and-drop (dnd-kit) — cross-column and reorder (real-time sync: Phase 3)
 - [ ] Analytics micro-frontend (Module Federation) integrated
 - [ ] 80%+ test coverage, Playwright E2E, Lighthouse > 90
 - [ ] Live deployment and GitHub repo updated

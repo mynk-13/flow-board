@@ -1,26 +1,133 @@
+import { useOutletContext, Link } from 'react-router-dom'
+import { FolderKanban, Trash2, Share2, Crown, Pencil, Eye } from 'lucide-react'
+import { useState } from 'react'
+import { deleteProject } from '@/lib/firestore'
 import { useAuth } from '@/features/auth'
+import type { OutletCtx, ProjectRole } from '@/lib/types'
+
+const ROLE_BADGE: Record<ProjectRole, { label: string; class: string; icon: React.ReactNode }> = {
+  admin: { label: 'Admin', class: 'bg-purple-100 text-purple-700', icon: <Crown size={10} /> },
+  writer: { label: 'Writer', class: 'bg-blue-100 text-blue-700', icon: <Pencil size={10} /> },
+  reader: { label: 'Reader', class: 'bg-slate-100 text-slate-600', icon: <Eye size={10} /> },
+}
 
 export function DashboardPage() {
-  const { user, signOut } = useAuth()
+  const { workspace, ownedProjects, sharedProjects, setOwnedProjects } = useOutletContext<OutletCtx>()
+  const { user } = useAuth()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  async function handleDelete(projectId: string) {
+    setDeletingId(projectId)
+    await deleteProject(projectId)
+    setOwnedProjects((prev) => prev.filter((p) => p.id !== projectId))
+    setDeletingId(null)
+  }
+
+  const totalCount = ownedProjects.length + sharedProjects.length
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-slate-600">{user?.email}</span>
-          <button
-            type="button"
-            onClick={() => signOut()}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Sign out
-          </button>
+    <div className="px-8 py-8 max-w-4xl">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-800">
+          {workspace?.name ?? 'Workspace'}
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          {totalCount} project{totalCount !== 1 ? 's' : ''}
+        </p>
+      </div>
+
+      {totalCount === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-slate-200 p-16 text-center">
+          <FolderKanban size={40} className="mx-auto mb-4 text-slate-300" />
+          <p className="text-slate-600 font-medium mb-1">No projects yet</p>
+          <p className="text-slate-400 text-sm mb-5">
+            Create your first project to start organising tasks on a Kanban board.
+          </p>
         </div>
-      </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-8 text-center">
-        <p className="text-slate-500">Welcome to FlowBoard. Boards and projects will appear here.</p>
-      </div>
+      ) : (
+        <div className="space-y-8">
+          {/* Owned projects */}
+          {ownedProjects.length > 0 && (
+            <section>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                Created by me
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ownedProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all"
+                  >
+                    <Link to={`/board/${project.id}`} className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                          <FolderKanban size={18} />
+                        </span>
+                        <span className="font-semibold text-slate-800 text-sm">{project.name}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-slate-400">
+                          {new Date(project.createdAt).toLocaleDateString()}
+                        </p>
+                        {(project.memberIds?.length ?? 0) > 0 && (
+                          <span className="flex items-center gap-1 text-xs text-slate-400">
+                            <Share2 size={11} />
+                            {project.memberIds.length} member{project.memberIds.length !== 1 ? 's' : ''}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                    <button
+                      type="button"
+                      title="Delete project"
+                      disabled={deletingId === project.id}
+                      onClick={() => handleDelete(project.id)}
+                      className="absolute top-3 right-3 rounded-lg p-1.5 text-slate-300 opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all disabled:opacity-50"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Shared projects */}
+          {sharedProjects.length > 0 && (
+            <section>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-1.5">
+                <Share2 size={12} /> Shared with me
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sharedProjects.map((project) => {
+                  const role = project.members?.[user?.uid ?? '']?.role ?? 'reader'
+                  const badge = ROLE_BADGE[role]
+                  return (
+                    <Link
+                      key={project.id}
+                      to={`/board/${project.id}`}
+                      className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+                          <FolderKanban size={18} />
+                        </span>
+                        <span className="font-semibold text-slate-800 text-sm flex-1 truncate">{project.name}</span>
+                        <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${badge.class}`}>
+                          {badge.icon} {badge.label}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Shared on {new Date(project.createdAt).toLocaleDateString()}
+                      </p>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      )}
     </div>
   )
 }

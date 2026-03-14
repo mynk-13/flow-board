@@ -9,6 +9,7 @@ import {
 import type { User } from 'firebase/auth'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+import { saveUserProfile } from '@/lib/firestore'
 
 type AuthState = {
   user: User | null
@@ -25,6 +26,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u)
       setLoading(false)
+      // Persist user profile so email → uid lookup works for sharing
+      if (u?.email) {
+        saveUserProfile(u.uid, u.email.toLowerCase()).catch(() => {
+          // non-critical, ignore
+        })
+      }
     })
     return () => unsubscribe()
   }, [])
