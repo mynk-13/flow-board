@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   LayoutDashboard,
+  BarChart2,
   ChevronLeft,
   ChevronRight,
   FolderKanban,
@@ -67,6 +68,21 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
         >
           <LayoutDashboard size={16} className="shrink-0" />
           {sidebarOpen && <span>Home</span>}
+        </Link>
+
+        <Link
+          to="/analytics"
+          className="flex items-center gap-3 rounded-lg px-2 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+        >
+          <BarChart2 size={16} className="shrink-0" />
+          {sidebarOpen && (
+            <span className="flex items-center gap-1.5 flex-1">
+              Analytics
+              <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[9px] font-bold text-indigo-600 uppercase tracking-wide">
+                MFE
+              </span>
+            </span>
+          )}
         </Link>
 
         {/* ── CREATED BY ME ─────────────────────────────────────── */}

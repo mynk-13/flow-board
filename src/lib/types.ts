@@ -59,4 +59,6 @@ export interface OutletCtx {
   sharedProjects: Project[]
   setOwnedProjects: React.Dispatch<React.SetStateAction<Project[]>>
   setSharedProjects: React.Dispatch<React.SetStateAction<Project[]>>
+  /** All tasks currently loaded in Zustand — exposed for AnalyticsPage */
+  tasks: Task[]
 }

@@ -14,6 +14,7 @@ import type { Workspace, Project, OutletCtx } from '@/lib/types'
 export function AppLayout() {
   const { user } = useAuth()
   const setActiveProject = useUIStore((s) => s.setActiveProject)
+  const tasks = useUIStore((s) => s.tasks)
   const [workspace, setWorkspace] = useState<Workspace | null>(null)
   const [ownedProjects, setOwnedProjects] = useState<Project[]>([])
   const [sharedProjects, setSharedProjects] = useState<Project[]>([])
@@ -53,6 +54,7 @@ export function AppLayout() {
     sharedProjects,
     setOwnedProjects,
     setSharedProjects,
+    tasks,
   }
 
   return (

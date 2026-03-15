@@ -6,6 +6,7 @@ import { LoginPage } from '@/pages/LoginPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { BoardPage } from '@/pages/BoardPage'
+import { AnalyticsPage } from '@/pages/AnalyticsPage'
 import { LoadingScreen } from '@/shared/LoadingScreen'
 
 /**
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route index element={<DashboardPage />} />
             <Route path="board/:projectId" element={<BoardPage />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
 
           {/* Any unknown path → login (not app, since user may not be authed) */}
