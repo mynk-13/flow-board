@@ -1,11 +1,11 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { Component, lazy, Suspense } from 'react'
+import { Component, lazy, Suspense, useEffect, useState, useRef } from 'react'
 import type { ErrorInfo, ReactNode } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { BarChart2, RefreshCw, AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/features/auth'
-import { useUIStore } from '@/lib/store'
+import { getTasks } from '@/lib/firestore'
 import type { OutletCtx, Task, Project } from '@/lib/types'
 
 // ─── Module Federation loader ────────────────────────────────────────────────
@@ -194,8 +194,33 @@ class RemoteErrorBoundary extends Component<{ children: ReactNode }, EBState> {
 export function AnalyticsPage() {
   const { ownedProjects, sharedProjects } = useOutletContext<OutletCtx>()
   const { user } = useAuth()
-  const tasks = useUIStore((s) => s.tasks)
   const allProjects = [...ownedProjects, ...sharedProjects]
+
+  // Fetch tasks for ALL projects so analytics reflects the full workspace,
+  // not just whichever board was opened last in the Zustand store.
+  const [allTasks, setAllTasks] = useState<Task[]>([])
+  const [loadingTasks, setLoadingTasks] = useState(true)
+
+  // Track the project IDs we last fetched to avoid redundant re-fetches
+  const lastProjectIds = useRef<string>('')
+
+  useEffect(() => {
+    if (allProjects.length === 0) {
+      setAllTasks([])
+      setLoadingTasks(false)
+      return
+    }
+
+    const projectIds = allProjects.map((p) => p.id).sort().join(',')
+    if (projectIds === lastProjectIds.current) return
+    lastProjectIds.current = projectIds
+
+    setLoadingTasks(true)
+    Promise.all(allProjects.map((p) => getTasks(p.id)))
+      .then((results) => setAllTasks(results.flat()))
+      .catch(() => setAllTasks([]))
+      .finally(() => setLoadingTasks(false))
+  }, [allProjects.map((p) => p.id).sort().join(',')])  // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex h-full flex-col">
@@ -205,18 +230,27 @@ export function AnalyticsPage() {
         <span className="ml-2 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-500 uppercase tracking-wide">
           MFE
         </span>
+        {loadingTasks && (
+          <span className="ml-auto text-[11px] text-slate-400 animate-pulse">
+            Loading data…
+          </span>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <RemoteErrorBoundary>
-          <Suspense fallback={<AnalyticsSkeleton />}>
-            <RemoteDashboard
-              tasks={tasks}
-              projects={allProjects}
-              userId={user?.uid ?? ''}
-            />
-          </Suspense>
-        </RemoteErrorBoundary>
+        {loadingTasks ? (
+          <AnalyticsSkeleton />
+        ) : (
+          <RemoteErrorBoundary>
+            <Suspense fallback={<AnalyticsSkeleton />}>
+              <RemoteDashboard
+                tasks={allTasks}
+                projects={allProjects}
+                userId={user?.uid ?? ''}
+              />
+            </Suspense>
+          </RemoteErrorBoundary>
+        )}
       </div>
     </div>
   )
