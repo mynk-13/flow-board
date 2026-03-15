@@ -6,6 +6,7 @@ import { useOutletContext } from 'react-router-dom'
 import { BarChart2, RefreshCw, AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/features/auth'
 import { getTasks } from '@/lib/firestore'
+import { useUIStore } from '@/lib/store'
 import type { OutletCtx, Task, Project } from '@/lib/types'
 
 // ─── Module Federation loader ────────────────────────────────────────────────
@@ -18,6 +19,7 @@ interface AnalyticsDashboardProps {
   tasks: Task[]
   projects: Project[]
   userId: string
+  isDark?: boolean
 }
 
 declare global {
@@ -194,6 +196,7 @@ class RemoteErrorBoundary extends Component<{ children: ReactNode }, EBState> {
 export function AnalyticsPage() {
   const { ownedProjects, sharedProjects } = useOutletContext<OutletCtx>()
   const { user } = useAuth()
+  const { isDark } = useUIStore()
   const allProjects = [...ownedProjects, ...sharedProjects]
 
   // Fetch tasks for ALL projects so analytics reflects the full workspace,
@@ -227,7 +230,7 @@ export function AnalyticsPage() {
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 px-5 py-3 shrink-0">
         <BarChart2 size={16} className="text-indigo-500" />
         <h1 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Analytics</h1>
-        <span className="ml-2 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-500 uppercase tracking-wide">
+        <span className="ml-2 rounded-full bg-indigo-50 dark:bg-indigo-900/50 px-2 py-0.5 text-[10px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wide">
           MFE
         </span>
         {loadingTasks && (
@@ -247,6 +250,7 @@ export function AnalyticsPage() {
                 tasks={allTasks}
                 projects={allProjects}
                 userId={user?.uid ?? ''}
+                isDark={isDark}
               />
             </Suspense>
           </RemoteErrorBoundary>

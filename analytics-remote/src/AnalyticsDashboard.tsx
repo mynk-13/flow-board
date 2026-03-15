@@ -6,29 +6,13 @@ import { PriorityChart }   from './components/PriorityChart'
 import { LabelChart }      from './components/LabelChart'
 import { CompletionChart } from './components/CompletionChart'
 import { TeamChart }       from './components/TeamChart'
+import { lightTheme, darkTheme } from './theme'
 
 export interface AnalyticsDashboardProps {
   tasks: Task[]
   projects: Project[]
   userId: string
-}
-
-/* ── Minimal design tokens ─────────────────────────────────────── */
-const card: React.CSSProperties = {
-  background: '#ffffff',
-  borderRadius: 20,
-  border: '1px solid #f1f5f9',
-  padding: '24px',
-  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-}
-
-const sectionTitle: React.CSSProperties = {
-  fontSize: 13,
-  fontWeight: 700,
-  color: '#475569',
-  textTransform: 'uppercase',
-  letterSpacing: '0.07em',
-  marginBottom: 20,
+  isDark?: boolean
 }
 
 /* ── Project filter pill ───────────────────────────────────────── */
@@ -36,10 +20,14 @@ function ProjectFilter({
   projects,
   selectedId,
   onSelect,
+  pillInactive,
+  pillInactiveText,
 }: {
   projects: Project[]
   selectedId: string
   onSelect: (id: string) => void
+  pillInactive: string
+  pillInactiveText: string
 }) {
   const pill = (id: string, label: string) => (
     <button
@@ -53,8 +41,8 @@ function ProjectFilter({
         fontWeight: 600,
         cursor: 'pointer',
         transition: 'all 0.15s',
-        background: selectedId === id ? '#6366f1' : '#f1f5f9',
-        color:      selectedId === id ? '#ffffff'  : '#64748b',
+        background: selectedId === id ? '#6366f1' : pillInactive,
+        color:      selectedId === id ? '#ffffff'  : pillInactiveText,
       }}
     >
       {label}
@@ -70,8 +58,9 @@ function ProjectFilter({
 }
 
 /* ── Main dashboard ─────────────────────────────────────────────── */
-export default function AnalyticsDashboard({ tasks, projects, userId }: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard({ tasks, projects, userId, isDark = false }: AnalyticsDashboardProps) {
   const [selectedProject, setSelectedProject] = useState('all')
+  const theme = isDark ? darkTheme : lightTheme
 
   const filteredTasks = selectedProject === 'all'
     ? tasks
@@ -81,22 +70,39 @@ export default function AnalyticsDashboard({ tasks, projects, userId }: Analytic
     ? projects
     : projects.filter((p) => p.id === selectedProject)
 
+  const card: React.CSSProperties = {
+    background: theme.card,
+    borderRadius: 20,
+    border: `1px solid ${theme.cardBorder}`,
+    padding: '24px',
+    boxShadow: isDark ? '0 1px 4px rgba(0,0,0,0.3)' : '0 1px 4px rgba(0,0,0,0.06)',
+  }
+
+  const sectionTitle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 700,
+    color: theme.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: '0.07em',
+    marginBottom: 20,
+  }
+
   return (
     <div
       style={{
         fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
-        background: '#f8fafc',
+        background: theme.bg,
         minHeight: '100%',
         padding: '32px 32px 48px',
-        color: '#0f172a',
+        color: theme.textPrimary,
       }}
     >
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 800, color: theme.textPrimary, marginBottom: 4 }}>
           Analytics
         </h1>
-        <p style={{ fontSize: 13, color: '#64748b' }}>
+        <p style={{ fontSize: 13, color: theme.textSecondary }}>
           Overview of tasks and team activity across your projects.
         </p>
       </div>
@@ -106,14 +112,16 @@ export default function AnalyticsDashboard({ tasks, projects, userId }: Analytic
         projects={projects}
         selectedId={selectedProject}
         onSelect={setSelectedProject}
+        pillInactive={theme.pillInactive}
+        pillInactiveText={theme.pillInactiveText}
       />
 
       {/* Overview metric cards */}
       <div style={{ marginBottom: 24 }}>
-        <OverviewCards tasks={filteredTasks} projects={filteredProjects} />
+        <OverviewCards tasks={filteredTasks} projects={filteredProjects} theme={theme} />
       </div>
 
-      {/* Charts grid — 2 columns on wide screens */}
+      {/* Charts grid */}
       <div
         style={{
           display: 'grid',
@@ -121,42 +129,37 @@ export default function AnalyticsDashboard({ tasks, projects, userId }: Analytic
           gap: 20,
         }}
       >
-        {/* Status breakdown */}
         <div style={card}>
           <p style={sectionTitle}>Task Status Breakdown</p>
-          <StatusChart tasks={filteredTasks} />
+          <StatusChart tasks={filteredTasks} theme={theme} />
         </div>
 
-        {/* Priority distribution */}
         <div style={card}>
           <p style={sectionTitle}>Priority Distribution</p>
-          <PriorityChart tasks={filteredTasks} />
+          <PriorityChart tasks={filteredTasks} theme={theme} />
         </div>
 
-        {/* Completion over time — full width */}
         <div style={{ ...card, gridColumn: '1 / -1' }}>
           <p style={sectionTitle}>Completions Over Time</p>
-          <p style={{ fontSize: 12, color: '#94a3b8', marginTop: -14, marginBottom: 16 }}>
+          <p style={{ fontSize: 12, color: theme.textMuted, marginTop: -14, marginBottom: 16 }}>
             Tasks moved to Done, grouped by week
           </p>
-          <CompletionChart tasks={filteredTasks} />
+          <CompletionChart tasks={filteredTasks} theme={theme} />
         </div>
 
-        {/* Label frequency */}
         <div style={card}>
           <p style={sectionTitle}>Label Usage (Top 10)</p>
-          <LabelChart tasks={filteredTasks} />
+          <LabelChart tasks={filteredTasks} theme={theme} />
         </div>
 
-        {/* Team activity */}
         <div style={card}>
           <p style={sectionTitle}>Team Activity by Assignee</p>
-          <TeamChart tasks={filteredTasks} projects={filteredProjects} userId={userId} />
+          <TeamChart tasks={filteredTasks} projects={filteredProjects} userId={userId} theme={theme} />
         </div>
       </div>
 
       {/* Footer badge */}
-      <p style={{ textAlign: 'center', marginTop: 40, fontSize: 11, color: '#cbd5e1' }}>
+      <p style={{ textAlign: 'center', marginTop: 40, fontSize: 11, color: theme.textMuted }}>
         Powered by{' '}
         <span style={{ fontWeight: 700, color: '#a5b4fc' }}>FlowBoard Analytics</span>
         {' '}· Module Federation remote

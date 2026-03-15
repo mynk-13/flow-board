@@ -4,12 +4,14 @@ import {
 } from 'recharts'
 import type { Task } from '../types'
 import { PRIORITY_LABELS, PRIORITY_COLORS } from '../types'
+import type { Theme } from '../theme'
 
 interface Props {
   tasks: Task[]
+  theme: Theme
 }
 
-export function PriorityChart({ tasks }: Props) {
+export function PriorityChart({ tasks, theme }: Props) {
   const order: Array<keyof typeof PRIORITY_LABELS> = ['urgent', 'high', 'medium', 'low', 'none']
   const data = order.map((p) => ({
     name: PRIORITY_LABELS[p],
@@ -18,34 +20,40 @@ export function PriorityChart({ tasks }: Props) {
   })).filter((d) => d.value > 0)
 
   if (data.length === 0) {
-    return <EmptyState message="No tasks yet" />
+    return <EmptyState message="No tasks yet" theme={theme} />
   }
 
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -16 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-        <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} allowDecimals={false} />
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme.gridLine} />
+        <XAxis dataKey="name" tick={{ fontSize: 12, fill: theme.textSecondary }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fontSize: 12, fill: theme.textMuted }} axisLine={false} tickLine={false} allowDecimals={false} />
         <Tooltip
           formatter={(value: number, name: string) => [`${value} tasks`, name]}
-          contentStyle={{ borderRadius: 10, border: '1px solid #f1f5f9', fontSize: 12 }}
-          cursor={{ fill: '#f8fafc' }}
+          contentStyle={{
+            borderRadius: 10,
+            border: `1px solid ${theme.tooltipBorder}`,
+            background: theme.tooltipBg,
+            color: theme.tooltipText,
+            fontSize: 12,
+          }}
+          cursor={{ fill: theme.cursorFill }}
         />
         <Bar dataKey="value" name="Tasks" radius={[6, 6, 0, 0]} maxBarSize={56}>
           {data.map((entry, i) => (
             <Cell key={i} fill={entry.color} />
           ))}
-          <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: '#475569' }} />
+          <LabelList dataKey="value" position="top" style={{ fontSize: 11, fontWeight: 600, fill: theme.textSecondary }} />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
   )
 }
 
-function EmptyState({ message }: { message: string }) {
+function EmptyState({ message, theme }: { message: string; theme: Theme }) {
   return (
-    <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: 13 }}>
+    <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.textMuted, fontSize: 13 }}>
       {message}
     </div>
   )

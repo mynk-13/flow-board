@@ -1,8 +1,10 @@
 import type { Task, Project } from '../types'
+import type { Theme } from '../theme'
 
 interface Props {
   tasks: Task[]
   projects: Project[]
+  theme: Theme
 }
 
 interface CardProps {
@@ -10,15 +12,16 @@ interface CardProps {
   value: string | number
   sub?: string
   accent: string
+  theme: Theme
 }
 
-function StatCard({ label, value, sub, accent }: CardProps) {
+function StatCard({ label, value, sub, accent, theme }: CardProps) {
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: theme.card,
         borderRadius: 16,
-        border: '1px solid #f1f5f9',
+        border: `1px solid ${theme.cardBorder}`,
         padding: '20px 24px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
         borderLeft: `4px solid ${accent}`,
@@ -26,16 +29,16 @@ function StatCard({ label, value, sub, accent }: CardProps) {
         minWidth: 0,
       }}
     >
-      <p style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+      <p style={{ fontSize: 12, fontWeight: 600, color: theme.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
         {label}
       </p>
-      <p style={{ fontSize: 32, fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{value}</p>
-      {sub && <p style={{ fontSize: 12, color: '#64748b', marginTop: 6 }}>{sub}</p>}
+      <p style={{ fontSize: 32, fontWeight: 700, color: theme.textPrimary, lineHeight: 1 }}>{value}</p>
+      {sub && <p style={{ fontSize: 12, color: theme.textSecondary, marginTop: 6 }}>{sub}</p>}
     </div>
   )
 }
 
-export function OverviewCards({ tasks, projects }: Props) {
+export function OverviewCards({ tasks, projects, theme }: Props) {
   const total      = tasks.length
   const done       = tasks.filter((t) => t.columnId === 'done').length
   const inProgress = tasks.filter((t) => t.columnId === 'inprogress').length
@@ -47,10 +50,10 @@ export function OverviewCards({ tasks, projects }: Props) {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-      <StatCard label="Total Tasks"    value={total}       sub={`across ${projects.length} project${projects.length !== 1 ? 's' : ''}`} accent="#6366f1" />
-      <StatCard label="Completed"      value={done}        sub={`${completion}% completion rate`}    accent="#34d399" />
-      <StatCard label="In Progress"    value={inProgress}  sub="actively being worked on"             accent="#a78bfa" />
-      <StatCard label="Overdue"        value={overdue}     sub="past due date, not done"              accent="#f97316" />
+      <StatCard theme={theme} label="Total Tasks"    value={total}       sub={`across ${projects.length} project${projects.length !== 1 ? 's' : ''}`} accent="#6366f1" />
+      <StatCard theme={theme} label="Completed"      value={done}        sub={`${completion}% completion rate`}    accent="#34d399" />
+      <StatCard theme={theme} label="In Progress"    value={inProgress}  sub="actively being worked on"             accent="#a78bfa" />
+      <StatCard theme={theme} label="Overdue"        value={overdue}     sub="past due date, not done"              accent="#f97316" />
     </div>
   )
 }
