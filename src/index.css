@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* ── Tailwind v4: use .dark CLASS strategy (not media query) ─────────────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @keyframes slide-in {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
@@ -52,5 +55,17 @@
     outline: 2px solid #6366f1;
     outline-offset: 2px;
     border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  /* Dot-grid backgrounds for the dashboard */
+  .dot-grid {
+    background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .dark .dot-grid {
+    background-image: radial-gradient(circle, #1e293b 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
   }
 }
