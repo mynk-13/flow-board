@@ -28,3 +28,13 @@ npm-debug.log*
 brd_extract/
 _vite-temp/
 FlowBoard_BRD.zip
+
+# TypeScript build artifacts
+*.tsbuildinfo
+vite.config.js
+
+# Test outputs
+coverage/
+playwright-report/
+test-results/
+lighthouse-reports/

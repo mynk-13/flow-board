@@ -1,115 +1,210 @@
-# Major Project Technical Aspects
+# FlowBoard — Technical Aspects
 
-> **Purpose:** High-level technical summary to explain FlowBoard (architecture, flow, state management).  
-> **Last updated:** March 14, 2026
+> **Purpose:** High-level technical reference — architecture, flows, state, testing, and deployment.  
+> **Last updated:** March 14, 2026 (Phase 5 complete)
 
 ---
 
 ## 1. Architecture Overview
 
-- **Type:** SPA (single-page application) with real-time WebSocket layer and optional micro-frontend (analytics).
-- **Frontend:** React 19 + TypeScript 5.x, Vite 6 (dev), feature-sliced structure. Production build deployable to Vercel/Netlify.
-- **Backend/Auth/DB:** Firebase (Auth + Firestore). Optional later: Node.js + Express + Socket.io for real-time (cursors, presence, task sync) if beyond Firestore listeners.
-- **Hosting:** Frontend on Vercel or Netlify; Firebase runs in Google’s infrastructure.
-- **Repo:** GitHub; CI/CD via GitHub Actions (lint → test → build → deploy).
+- **Type:** Single-page application (SPA) with real-time WebSocket layer and an Analytics micro-frontend.
+- **Frontend:** React 19 + TypeScript 5.x, Vite 6 (dev / host), feature-sliced structure.
+- **Backend / Auth / DB:** Firebase Auth + Firestore (serverless). Node.js + Express + Socket.io (Railway.app) for real-time events.
+- **Analytics MFE:** Webpack 5 Module Federation remote, deployed separately on Vercel.
+- **Hosting:** Main SPA → Vercel; Socket server → Railway.app; Analytics MFE → Vercel.
 
 ---
 
-## 2. Tech Stack (from BRD §3)
+## 2. Tech Stack
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| Framework | React 19 | With TypeScript 5.x |
-| Build (dev) | Vite 6 | HMR, fast dev |
-| Build (MF) | Webpack 5 | Module Federation for analytics remote only |
-| State (server) | TanStack Query v5 | Tasks, projects, members, cache, invalidation, optimistic updates |
-| State (client) | Zustand | UI: sidebar, filters, view mode, command palette |
-| State (real-time) | Zustand + Socket.io | Cursors, presence, incoming task events |
-| Forms | React Hook Form + Zod | Validation and form state |
-| URL state | React Router v7 | searchParams for filters, sort, selected task |
-| Real-time | Socket.io | Rooms per board; events: task:move, cursor:move, presence, board:sync |
-| Drag & drop | dnd-kit | Accessible, 60fps, reorder + cross-column |
-| Styling | Tailwind CSS 4 + Shadcn UI | Radix primitives, design tokens |
-| Routing | React Router v7 | Type-safe routes |
-| Virtual list | TanStack Virtual | 1K+ tasks, 60fps |
-| Testing | Vitest + RTL, Playwright | Unit + E2E; 80%+ coverage target |
-| Lint/format | ESLint 9 (flat) + Prettier + Husky | Pre-commit hooks |
-| Deploy | Vercel or Netlify | Preview on PR, production on main |
+| Framework | React 19 | TypeScript 5.x, strict mode |
+| Build (host) | Vite 6 | HMR, ESBuild, manual chunks |
+| Build (MFE remote) | Webpack 5 | Module Federation, exposes `./AnalyticsDashboard` |
+| State (server) | TanStack Query v5 | Tasks, projects, members — cached, optimistic updates |
+| State (client) | Zustand 5 | Sidebar, filters, task detail, dark mode, command palette |
+| State (real-time) | Zustand + Socket.io | Cursors, presence, live task sync |
+| Auth | Firebase Auth | Email/password; `AuthProvider` wraps app |
+| Database | Firestore | Projects, tasks, user profiles, role-based rules |
+| Real-time | Socket.io 4 | Rooms per board; events for tasks, cursors, presence |
+| Drag & drop | dnd-kit | Accessible, pointer-event based, full-card dragging |
+| Styling | Tailwind CSS 4 + CSS custom variants | Class-based dark mode via `@custom-variant dark` |
+| Routing | React Router v7 | Protected routes, `AuthGate`, `ProtectedRoute` |
+| Virtual list | TanStack Virtual v3 | Activates at > 15 tasks per column |
+| Forms | React Hook Form + custom validation | Zod ready; email validation in `shared/validation.ts` |
+| Charts | Recharts | Analytics MFE only |
+| Icons | Lucide React | Tree-shaken to ~3.6 KB gzip |
+| Testing (unit) | Vitest 3 + Testing Library | 96 tests, 94.48% statement coverage |
+| Testing (E2E) | Playwright | Auth, board, task CRUD flows |
+| Lint / format | ESLint 9 (flat) + Prettier + Husky | Pre-commit lint-staged hooks |
 
 ---
 
-## 3. Data & State Management (BRD §7.2)
-
-| State tier | Tool | Examples |
-|------------|------|----------|
-| **Server state** | TanStack Query v5 | Tasks, projects, workspaces, members, activity — cached, refetched on mutation |
-| **Client state** | Zustand (slices) | Sidebar open/closed, active filters, view mode (Kanban/List/Table), command palette open |
-| **Real-time state** | Zustand + Socket.io | Cursor positions, presence list, incoming task/create/update/delete from other users |
-| **Form state** | React Hook Form + Zod | Task create/edit, workspace settings, profile |
-| **URL state** | React Router v7 searchParams | Active filters, sort order, selected task ID — shareable |
-
-State is normalized (flat entity maps) with selector memoization and shallow equality where applicable.
-
----
-
-## 4. Key Flows
-
-- **User flow:** Sign in (OAuth/Magic Link) → Workspace list → Select/Create project → Board view → Create/move/edit tasks; optional Analytics and Command Palette.
-- **Auth flow:** Supabase Auth (or NextAuth) → JWT in httpOnly cookie → refresh before expiry; logout clears session and disconnects WebSocket.
-- **Real-time flow:** User joins board → Socket.io `board:join` → server sends `board:sync`; on task move → client emits `task:move` and applies optimistic update → server broadcasts → other clients update; conflict → server arbitrates, losing client gets rollback + toast.
-- **Deploy flow:** Git push → GitHub Actions (lint, test, build) → Vercel/Netlify build → preview (PR) or production (main).
-
----
-
-## 5. Project Structure (BRD §7.1 — feature-sliced)
+## 3. Feature-Sliced Directory Structure
 
 ```
 flow-board/
-  src/
-    app/          # App shell, routing, global providers (AppShell placeholder)
-    features/     # board/, tasks/, analytics/, auth/, workspace/ (index placeholders)
-    shared/       # Design system, utils, constants, types
-    lib/          # Socket client, query client, Zod schemas
-    pages/        # Route-level page compositions
-    main.tsx      # Entry: React root + App
-    App.tsx       # Root component
-    index.css     # Tailwind + base styles
-  public/         # favicon.svg, static assets
-  .husky/         # pre-commit → lint-staged
-  .env.example    # Env var template
-analytics-remote/ # (Phase 4) Separate MFE app — Module Federation remote
+├── e2e/                     # Playwright E2E tests
+│   ├── helpers.ts
+│   ├── auth.spec.ts         # Login, signup, password toggle, validation
+│   └── board.spec.ts        # Dashboard, board, task CRUD
+├── src/
+│   ├── app/
+│   │   ├── AppLayout.tsx    # Shell: sidebar, header, UserMenu, CommandPalette
+│   │   └── Sidebar.tsx      # Nav: "Created by me" / "Shared with me" / Analytics
+│   ├── features/
+│   │   ├── auth/            # AuthProvider, useAuth, AuthGate
+│   │   ├── board/           # BoardColumn, ShareModal, PresenceBar, CursorOverlay
+│   │   ├── tasks/           # TaskCard, TaskDetailModal
+│   │   └── workspace/       # Workspace creation utilities
+│   ├── lib/
+│   │   ├── firebase.ts      # Firebase app initialisation
+│   │   ├── firestore.ts     # CRUD helpers: projects, tasks, users, sharing
+│   │   ├── labels.ts        # PRESET_LABELS, getLabelDef() — tested
+│   │   ├── socket.ts        # Socket.io client singleton + event typings
+│   │   ├── store.ts         # Zustand UIStore — tested (100% stmts)
+│   │   └── types.ts         # Task, Project, Column, Role, OutletCtx interfaces
+│   ├── pages/
+│   │   ├── LoginPage.tsx    # Modern auth card, email validation, password toggle
+│   │   ├── SignupPage.tsx   # Password rule checklist, animated feedback
+│   │   ├── DashboardPage.tsx# TiltCard grid, owned / shared sections, skeletons
+│   │   ├── BoardPage.tsx    # Kanban + real-time + filter bar + role enforcement
+│   │   └── AnalyticsPage.tsx# Module Federation host loader, skeleton states
+│   ├── shared/
+│   │   ├── CommandPalette.tsx  # ⌘K global palette — tested
+│   │   ├── FilterDropdown.tsx  # Custom dropdown — tested
+│   │   ├── FlowBoardLogo.tsx   # SVG brand mark — tested
+│   │   ├── LabelPicker.tsx     # Preset + custom tag picker — tested
+│   │   ├── LoadingScreen.tsx   # Full-page spinner — tested
+│   │   ├── PasswordInput.tsx   # Eye toggle, state variants — tested
+│   │   ├── SelectDropdown.tsx  # Role / option select — tested
+│   │   ├── ThemeToggle.tsx     # Sun/Moon with localStorage — tested
+│   │   └── validation.ts       # isValidEmail, getEmailValidationMessage — tested
+│   ├── test/
+│   │   └── setup.ts         # jest-dom matchers, localStorage mock, scrollIntoView mock
+│   ├── App.tsx              # Router + AuthGate + ProtectedRoute
+│   └── index.css            # Tailwind 4 base, dark variant, dot-grid, fonts
+├── analytics-remote/        # Webpack 5 MFE
+│   ├── src/
+│   │   ├── AnalyticsDashboard.tsx  # Exposed component
+│   │   ├── theme.ts                # lightTheme / darkTheme token objects
+│   │   └── components/             # StatusChart, PriorityChart, etc.
+│   └── webpack.config.js
+├── server/                  # Node.js Socket.io server (Railway)
+│   └── src/index.ts
+├── scripts/
+│   ├── bundle-audit.mjs     # Reports gzip sizes per chunk
+│   └── lighthouse.mjs       # Headless Lighthouse runner
+├── playwright.config.ts
+├── vitest.config.ts
+└── vite.config.ts           # Manual chunks for Firebase, React, socket, dnd-kit…
 ```
 
 ---
 
-## 6. Real-Time Architecture (BRD §7.3)
+## 4. State Management Deep-Dive
 
-- **Pattern:** Pub/sub; one Socket.io room per board.
-- **Events:** `board:join` (client), `board:sync` (server on join/reconnect), `task:move` / `task:create` / `task:update` / `task:delete` (bidirectional), `cursor:move` (throttled ~30fps), `presence:join` / `presence:leave` / `presence:update`.
-- **Optimistic updates:** Local state updates immediately; server confirms or sends rollback; conflict resolution with toast and optional undo.
+| State tier | Tool | Examples |
+|------------|------|----------|
+| **Server** | TanStack Query v5 | Projects list, task list — refetch on mutation |
+| **Client UI** | Zustand (`UIStore`) | `sidebarOpen`, `isDark`, `taskDetailId`, `filterPriority`, `filterLabel`, `filterSearch`, `cmdPaletteOpen` |
+| **Real-time** | Zustand + Socket.io | `tasks[]` updated via `applyRemoteMove` / `applyRemotePatch` (functional updaters — avoids stale closure) |
+| **Form** | Controlled state + custom validation | React Hook Form ready; currently plain controlled inputs |
+| **Auth** | Firebase Auth + React context | `AuthProvider` watches `onAuthStateChanged`; `useAuth()` returns user, loading, signOut |
 
----
-
-## 7. Module Federation (BRD §7.4)
-
-- **Host:** Vite React app; lazy-loads analytics remote via dynamic import + Suspense (skeleton) and error boundary (retry).
-- **Remote:** Analytics dashboard (Webpack 5 Module Federation); exposes single entry component.
-- **Shared:** react, react-dom, zustand, recharts — singleton to avoid duplication. Version compatibility validated in CI.
-
----
-
-## 8. Environment & Config
-
-- **Frontend env:** Six Firebase config vars: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`. Set in `.env` locally and in Vercel/Netlify. See **FIREBASE_SETUP.md**.
-- **Backend env (if custom Node + Socket.io later):** `DATABASE_URL`, `CORS_ORIGIN`, etc. Documented in `.env.example` when added.
-- **CI:** GitHub Actions use repo secrets for deploy and any required env.
+### Stale Closure Fix (real-time)
+Socket.io event handlers are registered once. If they close over `tasks` state directly, they see the initial snapshot forever. Solution: Zustand's `set((s) => ...)` functional updater reads **current** state at call time — handlers call `applyRemoteMove` / `applyRemotePatch` which use this pattern.
 
 ---
 
-## 9. How to Explain This Project (elevator pitch)
+## 5. Role-Based Access Control (RBAC)
 
-**FlowBoard** is a real-time collaborative project management app (Kanban) for teams. Users create workspaces and projects, manage tasks on a board with drag-and-drop, and see live cursors and presence. The stack is React 19 and TypeScript with Vite, Zustand and TanStack Query for state, Socket.io for real-time sync, and an analytics panel loaded as a micro-frontend via Module Federation. It’s built as a portfolio-grade project with 80%+ test coverage, WCAG 2.1 AA, and Core Web Vitals optimized, deployed on Vercel/Netlify with a backend (e.g. Supabase or Node/Express + PostgreSQL).
+| Role | Create/Delete project | Edit tasks | View board | See cursors |
+|------|-----------------------|------------|------------|-------------|
+| `admin` | ✅ | ✅ | ✅ | ✅ |
+| `writer` | ❌ | ✅ | ✅ | ✅ |
+| `reader` | ❌ | ❌ | ✅ | ❌ |
+
+- Projects store a `members: Record<userId, ProjectMemberInfo>` map.
+- Firestore rules enforce read/write at the document level.
+- Client uses `myRole` derived from `project.members[user.uid].role` to conditionally render/disable UI.
 
 ---
 
-*This file will be updated as implementation is finalized.*
+## 6. Real-Time Architecture
+
+- **Pattern:** Pub/sub; one Socket.io room per project (`board:<projectId>`).
+- **Events (client → server):** `board:join`, `task:move`, `task:update`, `task:delete`, `cursor:move` (throttled 30fps), `presence:update`.
+- **Events (server → clients):** `board:sync`, `task:moved`, `task:updated`, `task:deleted`, `cursor:update`, `presence:join`, `presence:leave`.
+- **Cursor visibility:** Only `admin` and `writer` roles; idle for > 10 s → cursor removed.
+
+---
+
+## 7. Module Federation (Analytics MFE)
+
+- **Host (Vite):** Injects `<script src="{VITE_ANALYTICS_REMOTE_URL}/remoteEntry.js">` at runtime; calls `window.analytics_remote.init(sharedScope)` passing the host's own `React` and `ReactDOM` to ensure a single React instance (avoids "Invalid Hook Call").
+- **Remote (Webpack 5):** Exposes `./AnalyticsDashboard`; accepts `tasks`, `projects`, `userId`, `isDark` props. Dark mode is handled via a `theme.ts` token object (`lightTheme` / `darkTheme`) passed to all charts.
+- **Data flow:** `AnalyticsPage` fetches tasks for ALL projects (owned + shared) via `Promise.all(projects.map(getTasks))` — independent of the active board's Zustand state.
+
+---
+
+## 8. Bundle Strategy
+
+After manual chunk splitting (`vite.config.ts`):
+
+| Chunk | Gzip |
+|-------|------|
+| `index` (app code) | ~24 kB |
+| `react` (React + ReactDOM) | ~59 kB |
+| `firebase` | ~109 kB |
+| `router` | ~13 kB |
+| `socket` | ~13 kB |
+| `dndkit` | ~16 kB |
+| `tanstack` | ~5 kB |
+| `lucide` | ~4 kB |
+| CSS | ~10 kB |
+
+**Critical path** (react + router + app + css): **~106 kB gzip** ✅  
+Firebase, socket, dnd-kit, and lucide load lazily and are cached independently.
+
+---
+
+## 9. Testing Strategy
+
+| Layer | Tool | Status |
+|-------|------|--------|
+| Unit tests | Vitest + Testing Library | 96 tests, **94.48% stmt coverage** ✅ |
+| E2E tests | Playwright (Chromium) | auth flow, dashboard, board, task CRUD |
+| Bundle audit | `scripts/bundle-audit.mjs` | Main chunk 23.58 kB gzip ✅ |
+| Lighthouse | `scripts/lighthouse.mjs` | Target ≥ 90 on all categories |
+
+Run commands:
+```bash
+npm run test              # unit tests (Vitest)
+npm run test:coverage     # coverage report
+npm run e2e               # Playwright E2E (needs dev server running)
+npm run bundle:audit      # gzip size report (after npm run build)
+npm run lighthouse:run    # Lighthouse audit (needs preview server)
+```
+
+---
+
+## 10. Environment Variables
+
+| Variable | Used by |
+|----------|---------|
+| `VITE_FIREBASE_API_KEY` | Firebase init |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase init |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase init |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase init |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase init |
+| `VITE_FIREBASE_APP_ID` | Firebase init |
+| `VITE_SOCKET_URL` | Socket.io client |
+| `VITE_ANALYTICS_REMOTE_URL` | Analytics MFE loader |
+
+---
+
+## 11. Elevator Pitch
+
+**FlowBoard** is a real-time collaborative project management app (Kanban-style) built for portfolios. Teams can create projects, assign tasks, and collaborate in real time with live cursors and presence indicators. The stack is React 19 + TypeScript, Vite, Zustand + TanStack Query, Socket.io, and Firebase — with a separate Analytics micro-frontend loaded via Webpack 5 Module Federation. It features RBAC (admin / writer / reader), dark mode, a global command palette, virtual scroll for large boards, 94%+ unit test coverage, and a fully split bundle with a 24 kB main chunk.

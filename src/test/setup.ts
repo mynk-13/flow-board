@@ -13,6 +13,9 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
+// Mock scrollIntoView — not implemented in jsdom
+window.HTMLElement.prototype.scrollIntoView = () => {}
+
 // Mock matchMedia for dark mode detection
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
