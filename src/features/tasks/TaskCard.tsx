@@ -77,13 +77,13 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
       ref={setNodeRef}
       style={style}
       onClick={() => openTaskDetail(task.id)}
-      className={`group relative flex rounded-xl border bg-white overflow-hidden cursor-pointer select-none transition-all ${
+      className={`group relative flex rounded-xl border overflow-hidden cursor-pointer select-none transition-all ${
         isDragging
-          ? 'shadow-xl border-indigo-300 opacity-90 rotate-1 scale-105'
-          : 'border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200'
+          ? 'shadow-xl border-indigo-300 dark:border-indigo-600 opacity-90 rotate-1 scale-105 bg-white dark:bg-slate-800'
+          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700'
       }`}
     >
-      {/* ── Priority colour strip (~10 % of card width) ── */}
+      {/* ── Priority colour strip ── */}
       <div
         className="w-[5%] min-w-1 max-w-4 shrink-0"
         style={{ backgroundColor: PRIORITY_STRIP[task.priority] }}
@@ -91,10 +91,9 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
 
       {/* ── Main content ── */}
       <div className="flex-1 min-w-0 px-3 py-3 pr-6">
-
         {/* Title row + priority badge */}
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-medium text-slate-800 leading-snug line-clamp-2 flex-1 min-w-0">
+          <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug line-clamp-2 flex-1 min-w-0">
             {task.title}
           </p>
 
@@ -108,9 +107,9 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
           )}
         </div>
 
-        {/* Due date — directly below title */}
+        {/* Due date */}
         {task.dueDate && (
-          <p className="mt-1 text-[11px] font-medium text-slate-400">
+          <p className="mt-1 text-[11px] font-medium text-slate-400 dark:text-slate-500">
             {formatDue(task.dueDate)}
           </p>
         )}
@@ -138,14 +137,15 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
         )}
       </div>
 
-      {/* ── Drag handle (absolutely positioned, doesn't shift content) ── */}
+      {/* ── Drag handle ── */}
       {canEdit && (
         <button
           type="button"
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-2 right-1.5 rounded p-0.5 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-slate-500 cursor-grab active:cursor-grabbing"
+          aria-label="Drag to reorder"
+          className="absolute top-2 right-1.5 rounded p-0.5 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 hover:text-slate-500 dark:hover:text-slate-400 cursor-grab active:cursor-grabbing"
         >
           <GripVertical size={13} />
         </button>

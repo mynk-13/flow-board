@@ -2,6 +2,23 @@ import { create } from 'zustand'
 import type { Task, ColumnId } from './types'
 import type { PresenceUser, CursorData } from './socket'
 
+// ─── Dark mode helpers ────────────────────────────────────────────────────────
+function detectInitialDark(): boolean {
+  if (typeof window === 'undefined') return false
+  const saved = localStorage.getItem('theme')
+  if (saved) return saved === 'dark'
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
+}
+
+function applyTheme(dark: boolean): void {
+  if (typeof document === 'undefined') return
+  document.documentElement.classList.toggle('dark', dark)
+}
+
+const initialDark = detectInitialDark()
+applyTheme(initialDark)
+
+// ─── Store interface ──────────────────────────────────────────────────────────
 interface UIStore {
   sidebarOpen: boolean
   toggleSidebar: () => void
@@ -28,24 +45,23 @@ interface UIStore {
   upsertTask: (task: Task) => void
   removeTask: (id: string) => void
 
-  /**
-   * Safe remote-move: always reads current state from the store,
-   * never from a stale closure. Use this in socket event handlers.
-   */
   applyRemoteMove: (taskId: string, columnId: ColumnId, position: number) => void
-
-  /**
-   * Safe remote-patch: same stale-closure protection as applyRemoteMove.
-   */
   applyRemotePatch: (taskId: string, diff: Partial<Task>) => void
 
-  /** Real-time: who is currently viewing the same board */
   presence: PresenceUser[]
   setPresence: (users: PresenceUser[]) => void
 
-  /** Real-time: remote cursor positions */
   cursors: CursorData[]
   setCursors: (cursors: CursorData[]) => void
+
+  /** Dark mode — persisted to localStorage, respects system preference on first load */
+  isDark: boolean
+  toggleDark: () => void
+
+  /** Command palette visibility */
+  cmdPaletteOpen: boolean
+  openCmdPalette: () => void
+  closeCmdPalette: () => void
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -79,8 +95,6 @@ export const useUIStore = create<UIStore>((set) => ({
     })),
   removeTask: (id) => set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) })),
 
-  // Uses Zustand's functional `set` so it always reads the live tasks array,
-  // never a closure-captured stale copy.
   applyRemoteMove: (taskId, columnId, position) =>
     set((s) => ({
       tasks: s.tasks.map((t) =>
@@ -98,4 +112,17 @@ export const useUIStore = create<UIStore>((set) => ({
 
   cursors: [],
   setCursors: (cursors) => set({ cursors }),
+
+  isDark: initialDark,
+  toggleDark: () =>
+    set((s) => {
+      const newDark = !s.isDark
+      applyTheme(newDark)
+      localStorage.setItem('theme', newDark ? 'dark' : 'light')
+      return { isDark: newDark }
+    }),
+
+  cmdPaletteOpen: false,
+  openCmdPalette: () => set({ cmdPaletteOpen: true }),
+  closeCmdPalette: () => set({ cmdPaletteOpen: false }),
 }))
