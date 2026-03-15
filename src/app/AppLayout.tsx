@@ -66,13 +66,19 @@ export function AppLayout() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5">
-          <span className="text-sm font-medium text-slate-500">
-            {workspace?.name ?? 'Workspace'}
-          </span>
+          {workspace ? (
+            <span className="text-sm font-medium text-slate-600">{workspace.name}</span>
+          ) : (
+            <div className="animate-pulse h-4 w-32 rounded bg-slate-200" />
+          )}
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 uppercase">
-              {user?.email?.[0] ?? 'U'}
-            </span>
+            {user?.email ? (
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 uppercase">
+                {user.email[0]}
+              </span>
+            ) : (
+              <div className="animate-pulse h-7 w-7 rounded-full bg-slate-200" />
+            )}
           </div>
         </header>
 

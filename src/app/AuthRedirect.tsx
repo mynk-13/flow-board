@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
+import { LoadingScreen } from '@/shared/LoadingScreen'
 
 /**
  * Wraps login/signup pages: if already logged in, redirect to app.
@@ -16,11 +17,7 @@ export function AuthRedirect({ children }: { children: React.ReactNode }) {
   }, [user, loading, navigate])
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-500">Loading…</div>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
   if (user) {

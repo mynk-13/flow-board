@@ -302,8 +302,57 @@ export function BoardPage() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center text-slate-400 text-sm">
-        Loading board…
+      <div className="flex h-full flex-col">
+        {/* Skeleton top bar */}
+        <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-5 py-3">
+          <div className="animate-pulse h-4 w-4 rounded bg-slate-200" />
+          <div className="animate-pulse h-4 w-32 rounded bg-slate-200" />
+          <div className="animate-pulse h-5 w-14 rounded-full bg-slate-100 ml-1" />
+          <div className="ml-auto flex items-center gap-2">
+            <div className="animate-pulse h-7 w-16 rounded-xl bg-slate-100" />
+            <div className="animate-pulse h-7 w-28 rounded-xl bg-slate-100" />
+            <div className="animate-pulse h-7 w-24 rounded-xl bg-slate-100" />
+            <div className="animate-pulse h-7 w-24 rounded-xl bg-slate-100" />
+          </div>
+        </div>
+
+        {/* Skeleton kanban columns */}
+        <div className="flex-1 overflow-x-auto p-5">
+          <div className="flex gap-4 h-full">
+            {[
+              { cards: 3, widths: ['w-3/4', 'w-1/2', 'w-5/6'] },
+              { cards: 2, widths: ['w-2/3', 'w-4/5'] },
+              { cards: 4, widths: ['w-3/4', 'w-1/2', 'w-2/3', 'w-5/6'] },
+              { cards: 1, widths: ['w-1/2'] },
+            ].map((col, ci) => (
+              <div key={ci} className="w-72 shrink-0 flex flex-col gap-2">
+                {/* Column header */}
+                <div className="flex items-center gap-2 px-1 mb-1">
+                  <div className="animate-pulse h-2 w-2 rounded-full bg-slate-300" />
+                  <div className="animate-pulse h-3 w-20 rounded bg-slate-200" />
+                  <div className="animate-pulse h-4 w-5 rounded-full bg-slate-100 ml-auto" />
+                </div>
+                {/* Skeleton task cards */}
+                {col.cards && Array.from({ length: col.cards }).map((_, ri) => (
+                  <div key={ri} className="flex rounded-xl border border-slate-100 bg-white overflow-hidden shadow-sm">
+                    <div className="animate-pulse w-1.5 shrink-0 bg-slate-200" />
+                    <div className="flex-1 p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className={`animate-pulse h-3 rounded bg-slate-200 ${col.widths[ri] ?? 'w-2/3'}`} />
+                        <div className="animate-pulse h-4 w-12 rounded-md bg-slate-100 shrink-0" />
+                      </div>
+                      <div className="animate-pulse h-2.5 w-1/3 rounded bg-slate-100" />
+                      <div className="flex gap-1.5 pt-0.5">
+                        <div className="animate-pulse h-4 w-10 rounded-full bg-slate-100" />
+                        <div className="animate-pulse h-4 w-14 rounded-full bg-slate-100" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
