@@ -90,9 +90,9 @@ const RemoteDashboard = lazy(loadRemoteDashboard)
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 function AnalyticsSkeleton() {
-  const pulse = 'animate-pulse rounded-xl bg-slate-200'
+  const pulse = 'animate-pulse rounded-xl bg-slate-200 dark:bg-slate-700'
   return (
-    <div className="p-8 space-y-6 bg-slate-50 min-h-full">
+    <div className="p-8 space-y-6 bg-slate-50 dark:bg-slate-950 min-h-full">
       <div className="space-y-2">
         <div className={`${pulse} h-7 w-36`} />
         <div className={`${pulse} h-4 w-64`} />
@@ -104,7 +104,7 @@ function AnalyticsSkeleton() {
       </div>
       <div className="flex flex-wrap gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex-1 min-w-40 rounded-2xl bg-white border border-slate-100 p-5 shadow-sm space-y-3">
+          <div key={i} className="flex-1 min-w-40 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 p-5 shadow-sm space-y-3">
             <div className={`${pulse} h-3 w-20`} />
             <div className={`${pulse} h-8 w-12`} />
             <div className={`${pulse} h-3 w-28`} />
@@ -113,17 +113,17 @@ function AnalyticsSkeleton() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {[1, 2].map((i) => (
-          <div key={i} className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm space-y-4">
+          <div key={i} className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 p-6 shadow-sm space-y-4">
             <div className={`${pulse} h-3 w-32`} />
             <div className={`${pulse} h-56 w-full`} />
           </div>
         ))}
-        <div className="sm:col-span-2 rounded-2xl bg-white border border-slate-100 p-6 shadow-sm space-y-4">
+        <div className="sm:col-span-2 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 p-6 shadow-sm space-y-4">
           <div className={`${pulse} h-3 w-40`} />
           <div className={`${pulse} h-56 w-full`} />
         </div>
         {[3, 4].map((i) => (
-          <div key={i} className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm space-y-4">
+          <div key={i} className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 p-6 shadow-sm space-y-4">
             <div className={`${pulse} h-3 w-32`} />
             <div className={`${pulse} h-44 w-full`} />
           </div>
@@ -224,9 +224,9 @@ export function AnalyticsPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-5 py-3 shrink-0">
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 px-5 py-3 shrink-0">
         <BarChart2 size={16} className="text-indigo-500" />
-        <h1 className="text-sm font-semibold text-slate-800">Analytics</h1>
+        <h1 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Analytics</h1>
         <span className="ml-2 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-500 uppercase tracking-wide">
           MFE
         </span>

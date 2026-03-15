@@ -61,11 +61,11 @@
 @layer utilities {
   /* Dot-grid backgrounds for the dashboard */
   .dot-grid {
-    background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+    background-image: radial-gradient(circle, #c4b5fd 1.2px, transparent 1.2px);
     background-size: 28px 28px;
   }
   .dark .dot-grid {
-    background-image: radial-gradient(circle, #1e293b 1.5px, transparent 1.5px);
+    background-image: radial-gradient(circle, #1e1b4b 2px, transparent 2px);
     background-size: 28px 28px;
   }
 }

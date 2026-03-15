@@ -97,16 +97,7 @@ export function DashboardPage() {
 
   return (
     /* Dot-grid canvas */
-    <div className="relative min-h-full dot-grid bg-slate-50 dark:bg-slate-950 px-8 py-10">
-
-      {/* Radial fade so the grid fades to the background at edges */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 70% 55% at 50% 0%, transparent 60%, var(--tw-gradient-stops, #f8fafc) 100%)',
-        }}
-      />
+    <div className="relative min-h-full dot-grid bg-violet-50 dark:bg-slate-950 px-8 py-10">
 
       <div className="relative z-10 max-w-5xl">
 

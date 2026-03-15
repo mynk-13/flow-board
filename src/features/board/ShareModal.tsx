@@ -124,19 +124,19 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-2xl bg-white shadow-2xl"
+        className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 border border-transparent dark:border-slate-700/60 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60 px-6 py-4">
           <div>
-            <h2 className="text-sm font-semibold text-slate-800">Share "{project.name}"</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Invite people to collaborate</p>
+            <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Share "{project.name}"</h2>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Invite people to collaborate</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200"
           >
             <X size={16} />
           </button>
@@ -152,7 +152,7 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
                 onChange={(e) => { setEmailInput(e.target.value); setLookupError(null) }}
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                 placeholder="Email address"
-                className="flex-1 h-9 rounded-xl border border-slate-300 px-3 text-sm text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="flex-1 h-9 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-indigo-500 dark:focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
               <SelectDropdown
                 value={selectedRole}
@@ -181,15 +181,15 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
           {/* Pending invites */}
           {pending.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Pending ({pending.length})
               </p>
               {pending.map((inv) => (
-                <div key={inv.uid} className="flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-200 text-xs font-bold text-indigo-700">
+                <div key={inv.uid} className="flex items-center gap-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 px-3 py-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-200 dark:bg-indigo-800 text-xs font-bold text-indigo-700 dark:text-indigo-300">
                     {inv.email[0].toUpperCase()}
                   </span>
-                  <span className="flex-1 text-xs text-slate-700 truncate">{inv.email}</span>
+                  <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 truncate">{inv.email}</span>
                   <SelectDropdown
                     value={inv.role}
                     onChange={(v) =>
@@ -202,7 +202,7 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
                   <button
                     type="button"
                     onClick={() => setPending((prev) => prev.filter((p) => p.uid !== inv.uid))}
-                    className="text-slate-400 hover:text-red-500"
+                    className="text-slate-400 dark:text-slate-500 hover:text-red-500"
                   >
                     <X size={13} />
                   </button>
@@ -214,15 +214,15 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
           {/* Existing members */}
           {existingMembers.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Current members
               </p>
               {/* Owner row */}
-              <div className="flex items-center gap-2 rounded-xl px-3 py-2 bg-slate-50">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-600">
+              <div className="flex items-center gap-2 rounded-xl px-3 py-2 bg-slate-50 dark:bg-slate-800/50">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300">
                   {(membersMap[ownerUid]?.email ?? ownerEmail ?? 'O')[0].toUpperCase()}
                 </span>
-                <span className="flex-1 text-xs text-slate-700 truncate">
+                <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 truncate">
                   {membersMap[ownerUid]?.email ?? ownerEmail ?? 'Owner'}
                 </span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${ROLE_BADGE.admin}`}>
@@ -231,11 +231,11 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
               </div>
 
               {existingMembers.map((m) => (
-                <div key={m.uid} className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-slate-50">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+                <div key={m.uid} className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300">
                     {m.email[0].toUpperCase()}
                   </span>
-                  <span className="flex-1 text-xs text-slate-700 truncate">{m.email}</span>
+                  <span className="flex-1 text-xs text-slate-700 dark:text-slate-300 truncate">{m.email}</span>
                   <SelectDropdown
                     value={m.role}
                     onChange={(v) => handleRoleChange(m.uid, v as ProjectRole)}
@@ -245,7 +245,7 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
                     type="button"
                     onClick={() => handleRemove(m.uid)}
                     title="Remove member"
-                    className="rounded-lg p-1 text-slate-300 hover:bg-red-50 hover:text-red-500"
+                    className="rounded-lg p-1 text-slate-300 dark:text-slate-600 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -256,11 +256,11 @@ export function ShareModal({ project, ownerUid, ownerEmail, onClose, onProjectUp
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 px-6 py-4 flex justify-end gap-2">
+        <div className="border-t border-slate-100 dark:border-slate-700/60 px-6 py-4 flex justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+            className="rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Cancel
           </button>

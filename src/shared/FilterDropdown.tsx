@@ -59,8 +59,8 @@ export function FilterDropdown({
         onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
           selected
-            ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
-            : 'border-slate-200 bg-slate-50 text-slate-500 hover:bg-white hover:border-slate-300 hover:text-slate-700'
+            ? 'border-indigo-300 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300'
+            : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-700 dark:hover:text-slate-200'
         }`}
       >
         {/* Dot or icon */}
@@ -94,29 +94,29 @@ export function FilterDropdown({
 
       {/* Dropdown panel */}
       {open && (
-        <div className="absolute right-0 top-full z-30 mt-1.5 min-w-40 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
+        <div className="absolute right-0 top-full z-30 mt-1.5 min-w-40 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg dark:shadow-slate-900/60">
           {/* "All" row */}
           <button
             type="button"
             onClick={() => { onChange(null); setOpen(false) }}
-            className={`flex w-full items-center gap-2.5 px-3 py-2 text-xs hover:bg-slate-50 transition-colors ${
-              !value ? 'text-slate-800 font-medium' : 'text-slate-500'
+            className={`flex w-full items-center gap-2.5 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+              !value ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-500 dark:text-slate-400'
             }`}
           >
-            <span className="inline-block h-2 w-2 rounded-full bg-slate-200 shrink-0" />
+            <span className="inline-block h-2 w-2 rounded-full bg-slate-200 dark:bg-slate-700 shrink-0" />
             All
             {!value && <Check size={11} className="ml-auto text-indigo-500" />}
           </button>
 
-          <div className="h-px bg-slate-100 mx-2" />
+          <div className="h-px bg-slate-100 dark:bg-slate-700/60 mx-2" />
 
           {options.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => { onChange(opt.value); setOpen(false) }}
-              className={`flex w-full items-center gap-2.5 px-3 py-2 text-xs hover:bg-slate-50 transition-colors ${
-                value === opt.value ? 'text-slate-800 font-medium' : 'text-slate-600'
+              className={`flex w-full items-center gap-2.5 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+                value === opt.value ? 'text-slate-800 dark:text-slate-200 font-medium' : 'text-slate-600 dark:text-slate-400'
               }`}
             >
               {opt.dotColor && (
