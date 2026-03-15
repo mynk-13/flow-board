@@ -62,7 +62,7 @@ export function BoardColumn({ columnId, tasks, onAddTask, activeTaskId, canEdit 
     : 'bg-slate-100/70 dark:bg-slate-800/40'
 
   return (
-    <div className="flex w-72 shrink-0 flex-col">
+    <div className="flex flex-1 min-w-44 flex-col">
       {/* Column header */}
       <div className="mb-3 flex items-center gap-2">
         <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${COLUMN_BADGE[columnId]}`}>

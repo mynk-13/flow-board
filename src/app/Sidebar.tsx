@@ -41,7 +41,7 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
   return (
     <aside
       className={`relative flex flex-col border-r border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 transition-all duration-200 ${
-        sidebarOpen ? 'w-60' : 'w-14'
+        sidebarOpen ? 'w-52' : 'w-14'
       } shrink-0`}
     >
       {/* Logo — clean, no toggle here */}
@@ -159,25 +159,16 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
         )}
       </nav>
 
-      {/* Collapse / expand toggle at bottom */}
+      {/* Collapse / expand toggle — icon only */}
       <div className="border-t border-slate-100 dark:border-slate-800 p-2">
         <button
           type="button"
           onClick={toggleSidebar}
           aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-          className={`flex w-full items-center rounded-lg px-2 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100 transition-colors ${
-            sidebarOpen ? 'gap-2' : 'justify-center'
-          }`}
+          className="flex w-full items-center justify-center rounded-lg py-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
         >
-          {sidebarOpen ? (
-            <>
-              <ChevronsLeft size={16} className="shrink-0" />
-              <span>Collapse</span>
-            </>
-          ) : (
-            <ChevronsRight size={16} />
-          )}
+          {sidebarOpen ? <ChevronsLeft size={16} /> : <ChevronsRight size={16} />}
         </button>
       </div>
     </aside>

@@ -62,6 +62,10 @@ interface TaskCardProps {
 
 export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
   const openTaskDetail = useUIStore((s) => s.openTaskDetail)
+
+  // Wire the entire card as the drag node — dnd-kit's PointerSensor with
+  // activationConstraint.distance=5 means a plain tap/click still fires onClick,
+  // while a small move triggers the drag, so both behaviours co-exist cleanly.
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: task.id,
     disabled: !canEdit,
@@ -76,21 +80,38 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
     <div
       ref={setNodeRef}
       style={style}
+      // Spread drag listeners on the whole card so any press+move drags it
+      {...(canEdit ? listeners : {})}
+      {...(canEdit ? attributes : {})}
       onClick={() => openTaskDetail(task.id)}
-      className={`group relative flex rounded-xl border overflow-hidden cursor-pointer select-none transition-all ${
+      className={`group relative flex rounded-xl border overflow-hidden select-none transition-all ${
+        canEdit ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'
+      } ${
         isDragging
           ? 'shadow-xl border-indigo-300 dark:border-indigo-600 opacity-90 rotate-1 scale-105 bg-white dark:bg-slate-800'
           : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700'
       }`}
     >
-      {/* ── Priority colour strip ── */}
+      {/* ── Priority colour strip — grip icon lives here ── */}
       <div
-        className="w-[5%] min-w-1 max-w-4 shrink-0"
+        className="relative w-[5%] min-w-1 max-w-4 shrink-0 flex items-center justify-center"
         style={{ backgroundColor: PRIORITY_STRIP[task.priority] }}
-      />
+      >
+        {/* Show grip dots on hover; brighter while actively dragging */}
+        {canEdit && (
+          <GripVertical
+            size={10}
+            className={`text-white transition-opacity ${
+              isDragging
+                ? 'opacity-80'
+                : 'opacity-0 group-hover:opacity-50'
+            }`}
+          />
+        )}
+      </div>
 
       {/* ── Main content ── */}
-      <div className="flex-1 min-w-0 px-3 py-3 pr-6">
+      <div className="flex-1 min-w-0 px-3 py-3">
         {/* Title row + priority badge */}
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug line-clamp-2 flex-1 min-w-0">
@@ -114,15 +135,18 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
           </p>
         )}
 
-        {/* Labels row */}
+        {/* Labels — stop propagation so clicking a tag doesn't open the modal */}
         {task.labels.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+          <div
+            className="flex flex-wrap items-center gap-1.5 mt-2"
+            onClick={(e) => e.stopPropagation()}
+          >
             {task.labels.map((label) => {
               const def = getLabelDef(label)
               return (
                 <span
                   key={label}
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold cursor-default"
                   style={{ backgroundColor: def.bg, color: def.fg }}
                 >
                   <span
@@ -136,20 +160,6 @@ export function TaskCard({ task, isDragging, canEdit = true }: TaskCardProps) {
           </div>
         )}
       </div>
-
-      {/* ── Drag handle ── */}
-      {canEdit && (
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          onClick={(e) => e.stopPropagation()}
-          aria-label="Drag to reorder"
-          className="absolute top-2 right-1.5 rounded p-0.5 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 hover:text-slate-500 dark:hover:text-slate-400 cursor-grab active:cursor-grabbing"
-        >
-          <GripVertical size={13} />
-        </button>
-      )}
     </div>
   )
 }

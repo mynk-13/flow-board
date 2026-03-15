@@ -318,15 +318,15 @@ export function BoardPage() {
         </div>
 
         {/* Skeleton kanban columns */}
-        <div className="flex-1 overflow-x-auto bg-slate-50 dark:bg-slate-950 p-5">
-          <div className="flex gap-4 h-full">
+        <div className="flex-1 overflow-x-auto bg-slate-50 dark:bg-slate-950 p-4">
+          <div className="flex gap-3 h-full">
             {[
               { cards: 3, widths: ['w-3/4', 'w-1/2', 'w-5/6'] },
               { cards: 2, widths: ['w-2/3', 'w-4/5'] },
               { cards: 4, widths: ['w-3/4', 'w-1/2', 'w-2/3', 'w-5/6'] },
               { cards: 1, widths: ['w-1/2'] },
             ].map((col, ci) => (
-              <div key={ci} className="w-72 shrink-0 flex flex-col gap-2">
+              <div key={ci} className="flex-1 min-w-44 flex flex-col gap-2">
                 {/* Column header */}
                 <div className="flex items-center gap-2 px-1 mb-1">
                   <div className={`${bone} h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600`} />
@@ -469,7 +469,7 @@ export function BoardPage() {
         onDragEnd={onDragEnd}
       >
         <div className="flex-1 overflow-x-auto overflow-y-hidden bg-slate-50 dark:bg-slate-950">
-          <div className="flex h-full gap-4 px-5 py-5 w-max">
+          <div className="flex h-full gap-3 px-4 py-4">
             {COLUMN_IDS.map((colId) => (
               <BoardColumn
                 key={colId}
