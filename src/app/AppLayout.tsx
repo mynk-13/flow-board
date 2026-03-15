@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Outlet } from 'react-router-dom'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { Settings, LogOut, Mail } from 'lucide-react'
 import { useAuth } from '@/features/auth'
 import { Sidebar } from './Sidebar'
 import {
@@ -13,8 +14,101 @@ import { ThemeToggle } from '@/shared/ThemeToggle'
 import { CommandPalette } from '@/shared/CommandPalette'
 import type { Workspace, Project, OutletCtx } from '@/lib/types'
 
+// ── Avatar menu ────────────────────────────────────────────────────────────────
+function UserMenu({ email, onSignOut }: { email: string; onSignOut: () => void }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    if (open) document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  // Close on Escape
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    if (open) document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [open])
+
+  const initial = email[0].toUpperCase()
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Avatar trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Open user menu"
+        aria-expanded={open}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-xs font-semibold text-indigo-700 dark:text-indigo-300 uppercase hover:ring-2 hover:ring-indigo-400 dark:hover:ring-indigo-600 transition-all"
+      >
+        {initial}
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div className="absolute right-0 top-9 z-50 w-60 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/60 dark:shadow-black/40 overflow-hidden">
+          {/* Email row */}
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-sm font-bold text-indigo-600 dark:text-indigo-300 uppercase">
+              {initial}
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">{email}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Signed in</p>
+            </div>
+          </div>
+
+          {/* Menu items */}
+          <div className="py-1.5 px-1.5 space-y-0.5">
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              <Mail size={14} className="shrink-0 text-slate-400 dark:text-slate-500" />
+              <span>Account email</span>
+            </button>
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              <Settings size={14} className="shrink-0 text-slate-400 dark:text-slate-500" />
+              <span>Settings</span>
+            </button>
+          </div>
+
+          {/* Sign out — separated by divider */}
+          <div className="border-t border-slate-100 dark:border-slate-800 py-1.5 px-1.5">
+            <button
+              type="button"
+              onClick={() => { setOpen(false); onSignOut() }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+            >
+              <LogOut size={14} className="shrink-0" />
+              <span>Sign out</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Layout ─────────────────────────────────────────────────────────────────────
 export function AppLayout() {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const { setActiveProject, tasks, openCmdPalette } = useUIStore()
   const [workspace, setWorkspace] = useState<Workspace | null>(null)
   const [ownedProjects, setOwnedProjects] = useState<Project[]>([])
@@ -64,6 +158,11 @@ export function AppLayout() {
     setCreating(false)
   }
 
+  async function handleSignOut() {
+    await signOut()
+    navigate('/login', { replace: true })
+  }
+
   const outletCtx: OutletCtx = {
     workspace,
     ownedProjects,
@@ -108,12 +207,7 @@ export function AppLayout() {
             <ThemeToggle />
 
             {user?.email ? (
-              <span
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-xs font-semibold text-indigo-700 dark:text-indigo-300 uppercase"
-                title={user.email}
-              >
-                {user.email[0]}
-              </span>
+              <UserMenu email={user.email} onSignOut={handleSignOut} />
             ) : (
               <div className="animate-pulse h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700" />
             )}

@@ -1,23 +1,21 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   LayoutDashboard,
   BarChart2,
-  PanelLeftClose,
-  PanelLeftOpen,
   FolderKanban,
   Plus,
-  LogOut,
   Share2,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react'
-import { useAuth } from '@/features/auth'
 import { useUIStore } from '@/lib/store'
 import { FlowBoardLogo } from '@/shared/FlowBoardLogo'
 import type { Project, ProjectRole } from '@/lib/types'
 
 const ROLE_BADGE: Record<ProjectRole, { label: string; class: string }> = {
-  admin: { label: 'admin', class: 'bg-purple-100 text-purple-600' },
-  writer: { label: 'writer', class: 'bg-blue-100 text-blue-600' },
-  reader: { label: 'reader', class: 'bg-slate-100 text-slate-500' },
+  admin:  { label: 'admin',  class: 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300' },
+  writer: { label: 'writer', class: 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' },
+  reader: { label: 'reader', class: 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400' },
 }
 
 interface SidebarProps {
@@ -28,16 +26,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProject }: SidebarProps) {
-  const { signOut } = useAuth()
-  const { user } = useAuth()
   const { sidebarOpen, toggleSidebar } = useUIStore()
-  const navigate = useNavigate()
   const { projectId } = useParams()
-
-  async function handleSignOut() {
-    await signOut()
-    navigate('/login', { replace: true })
-  }
 
   const isActive = (id: string) => projectId === id
 
@@ -51,42 +41,22 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
   return (
     <aside
       className={`relative flex flex-col border-r border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 transition-all duration-200 ${
-        sidebarOpen ? 'w-60' : 'w-16'
+        sidebarOpen ? 'w-60' : 'w-14'
       } shrink-0`}
     >
-      {/* Logo + collapse toggle (same row) */}
-      <div className="flex h-14 shrink-0 items-center border-b border-slate-100 dark:border-slate-800 px-3">
+      {/* Logo — clean, no toggle here */}
+      <div className="flex h-14 shrink-0 items-center justify-center border-b border-slate-100 dark:border-slate-800 px-3">
         {sidebarOpen ? (
-          <>
-            <Link to="/" className="flex flex-1 items-center gap-2.5 min-w-0">
-              <FlowBoardLogo size={28} />
-              <span className="font-bold text-slate-800 dark:text-slate-100 text-[15px] tracking-tight truncate">
-                FlowBoard
-              </span>
-            </Link>
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              aria-label="Collapse sidebar"
-              className="ml-1 shrink-0 rounded-lg p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-            >
-              <PanelLeftClose size={16} />
-            </button>
-          </>
+          <Link to="/" className="flex flex-1 items-center gap-2.5 min-w-0">
+            <FlowBoardLogo size={28} />
+            <span className="font-bold text-slate-800 dark:text-slate-100 text-[15px] tracking-tight truncate">
+              FlowBoard
+            </span>
+          </Link>
         ) : (
-          <div className="flex w-full flex-col items-center gap-2">
-            <Link to="/" aria-label="Home">
-              <FlowBoardLogo size={28} />
-            </Link>
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              aria-label="Expand sidebar"
-              className="rounded-lg p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-            >
-              <PanelLeftOpen size={14} />
-            </button>
-          </div>
+          <Link to="/" aria-label="Home" className="flex items-center justify-center">
+            <FlowBoardLogo size={28} />
+          </Link>
         )}
       </div>
 
@@ -189,23 +159,25 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
         )}
       </nav>
 
-      {/* User + sign out */}
-      <div className="border-t border-slate-100 dark:border-slate-800 p-2 space-y-1">
-        {sidebarOpen && (
-          <div className="flex items-center gap-2 rounded-lg px-2 py-2">
-            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-xs font-semibold text-indigo-700 dark:text-indigo-300 uppercase">
-              {user?.email?.[0] ?? 'U'}
-            </span>
-            <span className="truncate text-xs text-slate-600 dark:text-slate-400">{user?.email}</span>
-          </div>
-        )}
+      {/* Collapse / expand toggle at bottom */}
+      <div className="border-t border-slate-100 dark:border-slate-800 p-2">
         <button
           type="button"
-          onClick={handleSignOut}
-          className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm text-slate-500 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400"
+          onClick={toggleSidebar}
+          aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          className={`flex w-full items-center rounded-lg px-2 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100 transition-colors ${
+            sidebarOpen ? 'gap-2' : 'justify-center'
+          }`}
         >
-          <LogOut size={15} className="shrink-0" />
-          {sidebarOpen && <span>Sign out</span>}
+          {sidebarOpen ? (
+            <>
+              <ChevronsLeft size={16} className="shrink-0" />
+              <span>Collapse</span>
+            </>
+          ) : (
+            <ChevronsRight size={16} />
+          )}
         </button>
       </div>
     </aside>
