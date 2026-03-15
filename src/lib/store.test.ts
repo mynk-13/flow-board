@@ -73,7 +73,10 @@ describe('UIStore — tasks', () => {
     position: 0,
     projectId: 'p1',
     workspaceId: 'w1',
-    createdAt: new Date().toISOString(),
+    dueDate: null,
+    assigneeId: null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   }
 
   it('setTasks replaces the whole array', () => {
@@ -118,7 +121,10 @@ describe('UIStore — real-time safe updaters', () => {
     position: 1,
     projectId: 'p1',
     workspaceId: 'w1',
-    createdAt: new Date().toISOString(),
+    dueDate: null,
+    assigneeId: null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   }
 
   it('applyRemoteMove updates columnId and position', () => {
