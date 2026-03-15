@@ -35,9 +35,10 @@ export function PriorityChart({ tasks, theme }: Props) {
             borderRadius: 10,
             border: `1px solid ${theme.tooltipBorder}`,
             background: theme.tooltipBg,
-            color: theme.tooltipText,
             fontSize: 12,
           }}
+          itemStyle={{ color: theme.tooltipText }}
+          labelStyle={{ color: theme.textSecondary, fontWeight: 600 }}
           cursor={{ fill: theme.cursorFill }}
         />
         <Bar dataKey="value" name="Tasks" radius={[6, 6, 0, 0]} maxBarSize={56}>

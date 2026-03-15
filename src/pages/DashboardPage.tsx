@@ -63,17 +63,17 @@ function TiltCard({ children, className = '' }: { children: React.ReactNode; cla
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 function CardSkeleton() {
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white/80 dark:bg-slate-800/60 p-5 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
         <div className="animate-pulse h-10 w-10 rounded-xl bg-slate-200 dark:bg-slate-700 shrink-0" />
         <div className="space-y-2 flex-1">
           <div className="animate-pulse h-4 w-32 rounded bg-slate-200 dark:bg-slate-700" />
-          <div className="animate-pulse h-3 w-20 rounded bg-slate-100 dark:bg-slate-800" />
+          <div className="animate-pulse h-3 w-20 rounded bg-slate-200 dark:bg-slate-700/60" />
         </div>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="animate-pulse h-3 w-16 rounded bg-slate-100 dark:bg-slate-800" />
-        <div className="animate-pulse h-3 w-12 rounded bg-slate-100 dark:bg-slate-800" />
+      <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700">
+        <div className="animate-pulse h-3 w-16 rounded bg-slate-200 dark:bg-slate-700/60" />
+        <div className="animate-pulse h-3 w-12 rounded bg-slate-200 dark:bg-slate-700/60" />
       </div>
     </div>
   )

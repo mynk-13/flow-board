@@ -74,9 +74,10 @@ export function TeamChart({ tasks, projects, userId, theme }: Props) {
             borderRadius: 10,
             border: `1px solid ${theme.tooltipBorder}`,
             background: theme.tooltipBg,
-            color: theme.tooltipText,
             fontSize: 12,
           }}
+          itemStyle={{ color: theme.tooltipText }}
+          labelStyle={{ color: theme.textSecondary, fontWeight: 600 }}
           cursor={{ fill: theme.cursorFill }}
         />
         <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, paddingTop: 8, color: theme.textSecondary }} />

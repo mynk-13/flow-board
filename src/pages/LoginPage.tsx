@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { Mail, Lock, AlertCircle, CheckCircle2, XCircle, LayoutDashboard, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, Lock, AlertCircle, CheckCircle2, XCircle, ArrowRight, Loader2 } from 'lucide-react'
 import { auth } from '@/lib/firebase'
 import { PasswordInput } from '@/shared/PasswordInput'
 import { isValidEmail, getEmailValidationMessage } from '@/shared/validation'
+import { FlowBoardLogo } from '@/shared/FlowBoardLogo'
 
 function humanizeFirebaseError(err: unknown): string {
   const code = (err as { code?: string })?.code ?? ''
@@ -61,8 +62,8 @@ export function LoginPage() {
 
         {/* Brand */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/40">
-            <LayoutDashboard size={26} className="text-white" />
+          <div className="mx-auto mb-4 w-fit">
+            <FlowBoardLogo size={52} />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Welcome back</h1>
           <p className="mt-1 text-sm text-slate-400">Sign in to your FlowBoard account</p>

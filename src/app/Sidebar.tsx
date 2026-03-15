@@ -2,8 +2,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   LayoutDashboard,
   BarChart2,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
   FolderKanban,
   Plus,
   LogOut,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/features/auth'
 import { useUIStore } from '@/lib/store'
+import { FlowBoardLogo } from '@/shared/FlowBoardLogo'
 import type { Project, ProjectRole } from '@/lib/types'
 
 const ROLE_BADGE: Record<ProjectRole, { label: string; class: string }> = {
@@ -53,17 +54,39 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
         sidebarOpen ? 'w-60' : 'w-16'
       } shrink-0`}
     >
-      {/* Logo */}
-      <div className="flex h-14 items-center border-b border-slate-100 dark:border-slate-800 px-4">
+      {/* Logo + collapse toggle (same row) */}
+      <div className="flex h-14 shrink-0 items-center border-b border-slate-100 dark:border-slate-800 px-3">
         {sidebarOpen ? (
-          <Link to="/" className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-100 text-base">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white text-xs font-bold">F</span>
-            FlowBoard
-          </Link>
+          <>
+            <Link to="/" className="flex flex-1 items-center gap-2.5 min-w-0">
+              <FlowBoardLogo size={28} />
+              <span className="font-bold text-slate-800 dark:text-slate-100 text-[15px] tracking-tight truncate">
+                FlowBoard
+              </span>
+            </Link>
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              aria-label="Collapse sidebar"
+              className="ml-1 shrink-0 rounded-lg p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+            >
+              <PanelLeftClose size={16} />
+            </button>
+          </>
         ) : (
-          <Link to="/" className="flex w-full items-center justify-center">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white text-xs font-bold">F</span>
-          </Link>
+          <div className="flex w-full flex-col items-center gap-2">
+            <Link to="/" aria-label="Home">
+              <FlowBoardLogo size={28} />
+            </Link>
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              aria-label="Expand sidebar"
+              className="rounded-lg p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+            >
+              <PanelLeftOpen size={14} />
+            </button>
+          </div>
         )}
       </div>
 
@@ -166,7 +189,7 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
         )}
       </nav>
 
-      {/* User + collapse */}
+      {/* User + sign out */}
       <div className="border-t border-slate-100 dark:border-slate-800 p-2 space-y-1">
         {sidebarOpen && (
           <div className="flex items-center gap-2 rounded-lg px-2 py-2">
@@ -183,14 +206,6 @@ export function Sidebar({ ownedProjects, sharedProjects, myUserId, onCreateProje
         >
           <LogOut size={15} className="shrink-0" />
           {sidebarOpen && <span>Sign out</span>}
-        </button>
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-          className="flex w-full items-center justify-center rounded-lg px-2 py-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300"
-        >
-          {sidebarOpen ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
         </button>
       </div>
     </aside>

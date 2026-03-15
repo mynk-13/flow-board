@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import {
   Mail, Lock, AlertCircle, CheckCircle2, XCircle,
-  Circle, LayoutDashboard, ArrowRight, Loader2,
+  Circle, ArrowRight, Loader2,
 } from 'lucide-react'
 import { auth } from '@/lib/firebase'
 import { PasswordInput } from '@/shared/PasswordInput'
 import { isValidEmail, getEmailValidationMessage } from '@/shared/validation'
+import { FlowBoardLogo } from '@/shared/FlowBoardLogo'
 
 const PASSWORD_RULES = [
   { id: 'length',    label: 'At least 8 characters',       test: (p: string) => p.length >= 8 },
@@ -89,8 +90,8 @@ export function SignupPage() {
 
         {/* Brand */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/40">
-            <LayoutDashboard size={26} className="text-white" />
+          <div className="mx-auto mb-4 w-fit">
+            <FlowBoardLogo size={52} />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
           <p className="mt-1 text-sm text-slate-400">Start managing projects with FlowBoard</p>
