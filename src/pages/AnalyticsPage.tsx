@@ -6,7 +6,7 @@ import { useOutletContext } from 'react-router-dom'
 import { BarChart2, RefreshCw, AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/features/auth'
 import { useUIStore } from '@/lib/store'
-import type { OutletCtx } from '@/lib/types'
+import type { OutletCtx, Task, Project } from '@/lib/types'
 
 // ─── Module Federation loader ────────────────────────────────────────────────
 // Loads the Webpack 5 remote by injecting its remoteEntry.js script tag, then
@@ -14,11 +14,17 @@ import type { OutletCtx } from '@/lib/types'
 // Passing the host's React prevents the "two copies of React" problem that
 // causes "Invalid hook call" errors when the remote tries to use useState/useEffect.
 
+interface AnalyticsDashboardProps {
+  tasks: Task[]
+  projects: Project[]
+  userId: string
+}
+
 declare global {
   interface Window {
     analytics_remote?: {
       init: (shareScope: Record<string, unknown>) => Promise<void>
-      get: (module: string) => Promise<() => { default: React.ComponentType<unknown> }>
+      get: (module: string) => Promise<() => { default: React.ComponentType<AnalyticsDashboardProps> }>
     }
   }
 }
