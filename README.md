@@ -53,7 +53,7 @@ Built as a portfolio-grade application, FlowBoard is a full-stack, production-re
 
 ### Prerequisites
 - Node.js 18+
-- A Firebase project (see [FIREBASE_SETUP.md](./FIREBASE_SETUP.md))
+- A Firebase project — follow the setup in [`documentation/Post-Development/Deployment-Architecture.md`](./documentation/Post-Development/Deployment-Architecture.md)
 
 ### 1 — Clone and install
 
@@ -65,21 +65,20 @@ npm install
 
 ### 2 — Configure environment
 
-```bash
-cp .env.example .env
-# Fill in your Firebase config values in .env
+Create a `.env` file in the project root with your Firebase and service URLs:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_SOCKET_URL=http://localhost:3001
+VITE_ANALYTICS_REMOTE_URL=http://localhost:3002
 ```
 
-| Variable | Where to find it |
-|----------|-----------------|
-| `VITE_FIREBASE_API_KEY` | Firebase Console → Project Settings → General |
-| `VITE_FIREBASE_AUTH_DOMAIN` | same |
-| `VITE_FIREBASE_PROJECT_ID` | same |
-| `VITE_FIREBASE_STORAGE_BUCKET` | same |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | same |
-| `VITE_FIREBASE_APP_ID` | same |
-| `VITE_SOCKET_URL` | Your Railway.app URL (or `http://localhost:3001` locally) |
-| `VITE_ANALYTICS_REMOTE_URL` | Analytics MFE Vercel URL (or `http://localhost:3002` locally) |
+All values come from **Firebase Console → Project Settings → General**.
 
 ### 3 — Run locally
 
@@ -116,45 +115,26 @@ cd analytics-remote && npm install && npm start  # → http://localhost:3002
 
 ## 🧪 Testing
 
-### Unit Tests (Vitest)
+### Unit Tests — 96 tests, 94% coverage
 
 ```bash
 npm run test:coverage
 ```
 
-- **96 tests** across 11 test files
-- **94.48% statement coverage** on `src/lib/**` and `src/shared/**`
-- Components tested: `ThemeToggle`, `PasswordInput`, `FlowBoardLogo`, `LoadingScreen`, `FilterDropdown`, `SelectDropdown`, `LabelPicker`, `CommandPalette`
-- Store tested: full `UIStore` (sidebar, filters, tasks, real-time updaters, dark mode, command palette)
+See [`documentation/Post-Development/Testing-Documentation.md`](./documentation/Post-Development/Testing-Documentation.md) for the full test inventory, coverage breakdown, and manual testing checklist.
 
-### E2E Tests (Playwright)
-
-Create `.env.test` (copy from `.env.test.example`) with test Firebase credentials:
+### E2E Tests — Playwright
 
 ```bash
-PLAYWRIGHT_TEST_EMAIL=test@flowboard.dev
-PLAYWRIGHT_TEST_PASSWORD=Test@1234!
+npm run dev        # terminal 1
+npm run e2e        # terminal 2
 ```
 
-Then:
-
-```bash
-npm run dev            # start dev server in one terminal
-npm run e2e            # run Playwright in another
-npm run e2e:ui         # visual Playwright UI
-```
-
-**Covered flows:** login, signup, email validation, password toggle, sign-out, dashboard, dark mode toggle, command palette, sidebar collapse, project creation, board columns, inline task creation, task detail modal, task search filter.
+**Covered flows:** auth (login, signup, validation, sign-out), dashboard, dark mode, command palette, project creation, board CRUD, task creation, task detail, search filter.
 
 ---
 
-## 📦 Bundle Analysis
-
-After `npm run build`:
-
-```bash
-npm run bundle:audit
-```
+## 📦 Bundle
 
 | Chunk | Gzip |
 |-------|------|
@@ -169,45 +149,63 @@ npm run bundle:audit
 | CSS | 10 kB |
 
 **Critical-path (react + router + app + css): ~106 kB gzip.**  
-Firebase, Socket.io, dnd-kit, and icons are separate chunks loaded on demand and cached independently.
+All other chunks are lazy-loaded and cached independently.
 
 ---
 
-## 🔧 Architecture
+## 📂 Documentation
 
-See [TECHNICAL_ASPECTS.md](./TECHNICAL_ASPECTS.md) for the full deep-dive covering:
-- Feature-sliced directory structure
-- State management tiers (Zustand / TanStack Query / Socket.io)
-- RBAC implementation
-- Module Federation setup (host ↔ remote)
-- Real-time stale closure fix
-- Firestore security rules
+Full project documentation lives in [`documentation/`](./documentation/):
+
+### Pre-Development
+| Document | Description |
+|----------|-------------|
+| [`PRD.md`](./documentation/Pre-Development/PRD.md) | Product Requirements — vision, personas, user stories, MoSCoW prioritization |
+| [`FRD.md`](./documentation/Pre-Development/FRD.md) | Functional Requirements — detailed module-by-module behavior specs |
+| [`NFR.md`](./documentation/Pre-Development/NFR.md) | Non-Functional Requirements — performance, security, accessibility, scalability |
+
+### Design Documentation
+| Document | Description |
+|----------|-------------|
+| [`HLD.md`](./documentation/Design-Documentation/HLD.md) | High Level Design — system architecture, layer breakdown, deployment overview |
+| [`LLD.md`](./documentation/Design-Documentation/LLD.md) | Low Level Design — component hierarchy, Zustand store, type definitions, algorithms |
+| [`ADR.md`](./documentation/Design-Documentation/ADR.md) | Architecture Decision Records — Firebase, Socket.io, Zustand, MFE, Tailwind v4 decisions |
+| [`DFD.md`](./documentation/Design-Documentation/DFD.md) | Data Flow Diagrams — Level 0 context, Level 1 process flows, Level 2 task update detail |
+| [`API-Design.md`](./documentation/Design-Documentation/API-Design.md) | API Design — Socket.io event protocol, Firestore helper API, security rules |
+| [`Database-Design.md`](./documentation/Design-Documentation/Database-Design.md) | Database Design — Firestore schema, indexes, security rules, position algorithm |
+
+### Post-Development
+| Document | Description |
+|----------|-------------|
+| [`Deployment-Architecture.md`](./documentation/Post-Development/Deployment-Architecture.md) | Deployment setup — Vercel, Railway, Firebase, environment variables, checklist |
+| [`API-Documentation.md`](./documentation/Post-Development/API-Documentation.md) | API reference — Firebase Auth, Firestore helpers, Socket.io events, MFE props |
+| [`Testing-Documentation.md`](./documentation/Post-Development/Testing-Documentation.md) | Testing guide — unit test inventory, E2E scenarios, coverage report, Lighthouse |
+| [`User-Documentation.md`](./documentation/Post-Development/User-Documentation.md) | User guide — getting started, board usage, sharing, real-time, analytics, shortcuts |
 
 ---
 
-## 📁 Project Documents
+## 🔧 Architecture Overview
 
-| Document | Purpose |
-|----------|---------|
-| [PLAN_OF_ACTION.md](./PLAN_OF_ACTION.md) | Phases, milestones, BRD summary |
-| [TECHNICAL_ASPECTS.md](./TECHNICAL_ASPECTS.md) | Architecture, stack, state, flows |
-| [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) | Firebase project setup guide |
-| [RAILWAY_DEPLOY.md](./RAILWAY_DEPLOY.md) | Socket server Railway deployment |
-| [ANALYTICS_DEPLOY.md](./ANALYTICS_DEPLOY.md) | Analytics MFE Vercel deployment |
-| [.env.example](./.env.example) | Environment variable template |
-| [.env.test.example](./.env.test.example) | Playwright test credentials template |
+See [`documentation/Design-Documentation/HLD.md`](./documentation/Design-Documentation/HLD.md) and [`documentation/Design-Documentation/LLD.md`](./documentation/Design-Documentation/LLD.md) for the full deep-dive.
+
+Key design decisions documented in [`documentation/Design-Documentation/ADR.md`](./documentation/Design-Documentation/ADR.md):
+- Why Firebase over Supabase
+- Why Socket.io for real-time (not Firestore listeners alone)
+- Why Zustand (and how it solved the stale-closure real-time bug)
+- Why Module Federation via script injection instead of the Vite plugin
+- How Tailwind v4 dark mode works differently from v3
 
 ---
 
 ## 🌐 Deployment
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Vercel | `your-app.vercel.app` | Main SPA |
-| Railway | `your-server.railway.app` | Socket.io real-time server |
-| Vercel (MFE) | `your-analytics.vercel.app` | Analytics micro-frontend |
+| Service | Purpose |
+|---------|---------|
+| Vercel | Main SPA |
+| Railway | Socket.io real-time server |
+| Vercel (separate project) | Analytics micro-frontend |
 
-For Vercel deployment, set all `VITE_*` environment variables in **Settings → Environment Variables**.
+Full deployment walkthrough: [`documentation/Post-Development/Deployment-Architecture.md`](./documentation/Post-Development/Deployment-Architecture.md)
 
 ---
 

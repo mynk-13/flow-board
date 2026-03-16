@@ -29,6 +29,18 @@ brd_extract/
 _vite-temp/
 FlowBoard_BRD.zip
 
+# Docs — deploy guides (kept locally, not pushed)
+docs/FIREBASE_SETUP.md
+docs/RAILWAY_DEPLOY.md
+docs/ANALYTICS_DEPLOY.md
+docs/VERCEL_DEPLOY.md
+
+# Misc folder — env templates and internal logs
+misc/
+
+# Docs folder — local deploy guides and reference notes
+docs/
+
 # TypeScript build artifacts
 *.tsbuildinfo
 vite.config.js
